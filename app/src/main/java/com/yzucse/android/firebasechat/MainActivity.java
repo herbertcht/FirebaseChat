@@ -15,8 +15,6 @@
  */
 package com.yzucse.android.firebasechat;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -31,14 +29,12 @@ import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -71,7 +67,7 @@ public class MainActivity extends AppCompatActivity
         implements GoogleApiClient.OnConnectionFailedListener {
 
     public static final String MESSAGES_CHILD = "messages";
-    public static final int DEFAULT_MSG_LENGTH_LIMIT = 10;
+    public static final int DEFAULT_MSG_LENGTH_LIMIT = 3000;
     public static final String ANONYMOUS = "anonymous";
     private static final String TAG = "MainActivity";
     private static final int REQUEST_INVITE = 1;
@@ -79,6 +75,7 @@ public class MainActivity extends AppCompatActivity
     private static final String LOADING_IMAGE_URL = "https://www.google.com/images/spin-32.gif";
     private static final String MESSAGE_SENT_EVENT = "message_sent";
     private static final String MESSAGE_URL = "http://friendlychat.firebase.google.com/message/";
+    private static final int TIME_INTERVAL = 2000; // # milliseconds, desired time passed between two back presses.
     private String mUsername;
     private String mPhotoUrl;
     private SharedPreferences mSharedPreferences;
@@ -95,6 +92,7 @@ public class MainActivity extends AppCompatActivity
     private DatabaseReference mFirebaseDatabaseReference;
     private FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>
             mFirebaseAdapter;
+    private long mBackPressed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -254,20 +252,14 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 // Send messages on click.
-                mSendButton = (ImageButton) findViewById(R.id.sendButton);
-                mSendButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        FriendlyMessage friendlyMessage = new
-                                FriendlyMessage(mMessageEditText.getText().toString(),
-                                mUsername,
-                                mPhotoUrl,
-                                null /* no image */);
-                        mFirebaseDatabaseReference.child(MESSAGES_CHILD)
-                                .push().setValue(friendlyMessage);
-                        mMessageEditText.setText("");
-                    }
-                });
+                FriendlyMessage friendlyMessage = new
+                        FriendlyMessage(mMessageEditText.getText().toString(),
+                        mUsername,
+                        mPhotoUrl,
+                        null /* no image */);
+                mFirebaseDatabaseReference.child(MESSAGES_CHILD)
+                        .push().setValue(friendlyMessage);
+                mMessageEditText.setText("");
             }
         });
 
@@ -276,16 +268,10 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 // Select image for image message on click.
-                mAddMessageImageView = (ImageView) findViewById(R.id.addMessageImageView);
-                mAddMessageImageView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        /*Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                        intent.addCategory(Intent.CATEGORY_OPENABLE);
-                        intent.setType("image/*");
-                        startActivityForResult(intent, REQUEST_IMAGE);*/
-                    }
-                });
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType("image/*");
+                startActivityForResult(intent, REQUEST_IMAGE);
             }
         });
     }
@@ -403,28 +389,15 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        // TODO Auto-generated method stub
-        if (keyCode == KeyEvent.KEYCODE_BACK && getFragmentManager().getBackStackEntryCount() == 0) { // 攔截返回鍵
-            new AlertDialog.Builder(MainActivity.this)
-                    .setMessage("確定要結束應用程式嗎?")
-                    .setNegativeButton("確定",
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog,
-                                                    int which) {
-                                    finish();
-                                }
-                            })
-                    .setPositiveButton("取消",
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog,
-                                                    int which) {
-                                }
-                            }).show();
+    public void onBackPressed() {
+        if (mBackPressed + TIME_INTERVAL > System.currentTimeMillis()) {
+            super.onBackPressed();
+            return;
+        } else {
+            Toast.makeText(getBaseContext(), "再一次「返回」離開", Toast.LENGTH_SHORT).show();
         }
-        return true;
+
+        mBackPressed = System.currentTimeMillis();
     }
 
     public static class MessageViewHolder extends RecyclerView.ViewHolder {

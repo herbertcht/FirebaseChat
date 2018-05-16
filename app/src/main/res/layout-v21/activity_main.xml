@@ -14,47 +14,45 @@
         android:id="@+id/messageRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/toolbar" />
-
-    <LinearLayout
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/messagebar"
-        android:orientation="horizontal">
-
-        <ImageButton
+        android:layout_above="@+id/messagebar" />
+    <!--
+        <LinearLayout
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="36dp"
-            android:layout_weight="1"
-            android:background="@color/colorPrimary"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="?android:attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_sentiment_satisfied_black_24dp" />
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/messagebar"
+            android:orientation="horizontal">
 
-        <ImageButton
-            android:layout_width="match_parent"
-            android:layout_height="36dp"
-            android:layout_weight="1"
-            android:background="@color/colorPrimary"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="?android:attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_brush_black_24dp" />
+            <ImageButton
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:background="@color/colorPrimary"
+                android:src="@drawable/ic_sentiment_satisfied_black_24dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackgroundBorderless" />
 
-        <ImageButton
-            android:layout_width="match_parent"
-            android:layout_height="36dp"
-            android:layout_weight="1"
-            android:background="@color/colorPrimary"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="?android:attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_attach_file_black_24dp" />
+            <ImageButton
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:background="@color/colorPrimary"
+                android:src="@drawable/ic_brush_black_24dp"
+                android:clickable="true"
+                android:focusable="true"/>
 
-    </LinearLayout>
+            <ImageButton
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:background="@color/colorPrimary"
+                android:src="@drawable/ic_attach_file_black_24dp"
+                android:clickable="true"
+                android:focusable="true" />
 
+        </LinearLayout>
+    -->
     <LinearLayout
         android:id="@+id/messagebar"
         android:layout_width="match_parent"
@@ -75,7 +73,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:text=""
             android:layout_weight="1" />
 
         <ImageButton
@@ -83,10 +80,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:background="@drawable/ic_send_black_24dp"
+            android:background="#FFFFFFFF"
+            android:src="@drawable/ic_send_black_24dp"
             android:clickable="true"
-            android:focusable="true"
-            android:foreground="?android:attr/selectableItemBackgroundBorderless" />
+            android:focusable="true" />
 
     </LinearLayout>
 

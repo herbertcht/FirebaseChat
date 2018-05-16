@@ -14,8 +14,8 @@
         android:id="@+id/messageRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/toolbar" />
-
+        android:layout_above="@+id/messagebar" />
+<!--
     <LinearLayout
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -52,7 +52,7 @@
             android:focusable="true" />
 
     </LinearLayout>
-
+-->
     <LinearLayout
         android:id="@+id/messagebar"
         android:layout_width="match_parent"
