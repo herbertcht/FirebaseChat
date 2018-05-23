@@ -189,7 +189,6 @@ public class ChatRoomFragment extends Fragment {
         if (mFirebaseAdapter.getItemCount() == 0) {
             noitemText.setVisibility(View.VISIBLE);
             mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-            Log.e("ChatRoom", "0");
         }
 
         /*mFirebaseAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {

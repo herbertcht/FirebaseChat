@@ -70,7 +70,6 @@ public class ChatFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.e("NEW", "CHATVIEW");
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.activity_chat, container, false);
 
@@ -121,8 +120,6 @@ public class ChatFragment extends Fragment {
                                             int position,
                                             FriendlyMessage friendlyMessage) {
                 globalData.setViewVisibility(mProgressBar, ProgressBar.INVISIBLE);
-
-                Log.e("BIND", friendlyMessage.getText() + "A");
 
                 long t = friendlyMessage.getTimestamp();
                 if (t > 0) {
@@ -207,7 +204,7 @@ public class ChatFragment extends Fragment {
 
         mMessageRecyclerView.setAdapter(mFirebaseAdapter);
         mMessageEditText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(mSharedPreferences
-                .getInt(CodelabPreferences.FRIENDLY_MSG_LENGTH, StaticValue.DEFAULT_MSG_LENGTH_LIMIT))});
+                .getInt(StaticValue.FRIENDLY_MSG_LENGTH, StaticValue.DEFAULT_MSG_LENGTH_LIMIT))});
         mMessageEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -278,8 +275,6 @@ public class ChatFragment extends Fragment {
 
     @Override
     public void onPause() {
-        if (globalData.mUser != null)
-            globalData.setUserStatus(false);
         if (mFirebaseAdapter != null) mFirebaseAdapter.stopListening();
         super.onPause();
     }
@@ -287,8 +282,6 @@ public class ChatFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (globalData.mUser != null)
-            globalData.setUserStatus(true);
         if (mFirebaseAdapter != null) mFirebaseAdapter.startListening();
         /*View view = getView();
         if (view != null)

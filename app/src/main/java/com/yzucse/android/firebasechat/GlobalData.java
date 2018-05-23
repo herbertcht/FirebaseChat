@@ -2,7 +2,6 @@ package com.yzucse.android.firebasechat;
 
 import android.app.Activity;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -11,12 +10,8 @@ import com.google.android.gms.common.util.Strings;
 import com.google.firebase.database.DatabaseReference;
 
 import java.io.Serializable;
-import java.sql.Date;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -113,11 +108,8 @@ public class GlobalData implements Serializable {
     public void setmUser(User mUser) {
         if (mUser == null) return;
         this.mUser = new User();
-        Log.e("AA","AA");
         this.mUser.setUsername(mUser.getUsername());
-        Log.e("BB","BB");
         this.mUser.setUserID(mUser.getUserID());
-        Log.e("CC","CC");
         this.mUser.setOnline(mUser.getOnline());
         this.mUser.setPhotoUrl(mUser.getPhotoUrl());
         this.mUser.setSign(mUser.getSign());
@@ -132,13 +124,13 @@ public class GlobalData implements Serializable {
             view.setText(text);
     }
 
-    public void setViewVisibility(View view, int type){
-        if(view != null) {
+    public void setViewVisibility(View view, int type) {
+        if (view != null) {
             view.setVisibility(type);
         }
     }
 
-    public String getTimeByFormat(Object time, String format){
+    public String getTimeByFormat(Object time, String format) {
         return new SimpleDateFormat(format).format(time);
     }
 

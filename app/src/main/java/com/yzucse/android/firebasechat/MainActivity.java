@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity
                                 globalData.setUserStatus(true);
                                 if (complete())
                                     mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-                            } else Log.e("EEEE", "USER NULL");
+                            }
                         }
 
                         @Override
@@ -189,7 +189,7 @@ public class MainActivity extends AppCompatActivity
 
                         }
                     });
-                } else Log.e("FFFF", "FFFF");
+                }
 
                /* final DatabaseReference frienddbr = usrdbr.child(StaticValue.FRIEND);
                 if (frienddbr != null) {
@@ -233,7 +233,6 @@ public class MainActivity extends AppCompatActivity
 
             }
             if (complete()) mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-            Log.e(globalData.mUsersDBR.child(mFirebaseUser.getUid()).toString(), (globalData.mUser == null) + "");
 
             if (mFirebaseUser.getPhotoUrl() != null) {
                 globalData.mPhotoUrl = mFirebaseUser.getPhotoUrl().toString();

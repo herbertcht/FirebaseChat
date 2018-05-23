@@ -43,7 +43,10 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class SignInActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
@@ -136,14 +139,26 @@ public class SignInActivity extends AppCompatActivity implements
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
     }
 
-    private void writeToDB(){
-        FirebaseUser firebaseUser = mFirebaseAuth.getCurrentUser();
-        String uid = firebaseUser.getUid();
-        User saveUser = new User(uid, firebaseUser.getDisplayName());
-        saveUser.setEmail(firebaseUser.getEmail());
-        if (firebaseUser.getPhotoUrl() != null)
-            saveUser.setPhotoUrl(firebaseUser.getPhotoUrl().toString());
-        FirebaseDatabase.getInstance().getReference().child(StaticValue.Users).child(uid).setValue(saveUser);
+    private void writeToDB() {
+        final FirebaseUser firebaseUser = mFirebaseAuth.getCurrentUser();
+        final String uid = firebaseUser.getUid();
+        FirebaseDatabase.getInstance().getReference().child(StaticValue.Users).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.hasChild(uid)) {
+                    User saveUser = new User(uid, firebaseUser.getDisplayName());
+                    saveUser.setEmail(firebaseUser.getEmail());
+                    if (firebaseUser.getPhotoUrl() != null)
+                        saveUser.setPhotoUrl(firebaseUser.getPhotoUrl().toString());
+                    FirebaseDatabase.getInstance().getReference().child(StaticValue.Users).child(uid).setValue(saveUser);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void login() {

@@ -1,13 +1,10 @@
 package com.yzucse.android.firebasechat;
 
-import android.content.res.Resources;
-
-import com.google.android.gms.common.util.Strings;
-
 import java.util.List;
 import java.util.Map;
 
 public class StaticValue {
+    public static final String FRIENDLY_MSG_LENGTH = "friendly_msg_length";
     public static final String MESSAGES_CHILD = "Messages";
     public static final String MESSAGES = "messages";
     public static final String GROUP = "group";
@@ -47,7 +44,7 @@ public class StaticValue {
     }
 
 
-    static public String Map2String(Map<String, ?>itemList){
+    static public String Map2String(Map<String, ?> itemList) {
         StringBuilder sb = new StringBuilder();
         sb.append("{ ");
         if (itemList != null) {

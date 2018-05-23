@@ -7,7 +7,6 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -85,7 +84,6 @@ public class FriendsFragment extends Fragment {
     }
 
     final private void generateChat(final User friend) {
-        Log.e("NEW", "chat");
         ChatRoom friendChat = new ChatRoom();
         friendChat.setChatroomID(globalData.mUser.getUserID() + friend.getUserID());
         friendChat.setChatroomName("chat");
@@ -116,7 +114,6 @@ public class FriendsFragment extends Fragment {
         };
 
         Query messagesRef = globalData.mUsersDBR.orderByChild(StaticValue.BLOCKADE + "/" + globalData.mUser.getUserID()).equalTo(false);
-        Log.e("TTTTT", messagesRef.toString());
 
         FirebaseRecyclerOptions<User> options =
                 new FirebaseRecyclerOptions.Builder<User>()
@@ -158,10 +155,8 @@ public class FriendsFragment extends Fragment {
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     if (dataSnapshot.hasChild(globalData.mUser.getUserID() + friend.getUserID())) {
                                         key[0] = globalData.mUser.getUserID() + friend.getUserID();
-                                        Log.e("AAAA", key[0]);
                                     } else if (dataSnapshot.hasChild(friend.getUserID() + globalData.mUser.getUserID())) {
                                         key[0] = friend.getUserID() + globalData.mUser.getUserID();
-                                        Log.e("BBBB", key[0]);
                                     }
                                     if (Strings.isEmptyOrWhitespace(key[0])) {
                                         generateChat(friend);
@@ -205,7 +200,6 @@ public class FriendsFragment extends Fragment {
         if (mFirebaseAdapter.getItemCount() == 0) {
             noitemText.setVisibility(View.VISIBLE);
             mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-            Log.e("ChatRoom", "0");
         }
 
         /*mFirebaseAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {

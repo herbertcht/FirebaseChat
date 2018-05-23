@@ -15,10 +15,6 @@
  */
 package com.yzucse.android.firebasechat;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
 public class FriendlyMessage {
 
     private String id;
