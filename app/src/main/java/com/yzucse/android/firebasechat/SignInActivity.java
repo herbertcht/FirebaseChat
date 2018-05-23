@@ -41,7 +41,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class SignInActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
@@ -68,13 +70,13 @@ public class SignInActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_sign_in);
 
         // Assign fields
-        mSignInButtonG = (SignInButton) findViewById(R.id.signin_g_button);
-        mSignInButton = (Button) findViewById(R.id.signin_button);
-        mSignUpButton = (Button) findViewById(R.id.signup_button);
-        accountEdit = (EditText) findViewById(R.id.account_edit);
-        passwordEdit = (EditText) findViewById(R.id.password_edit);
-        accoutLayout = (TextInputLayout) findViewById(R.id.account_layout);
-        passwordLayout = (TextInputLayout) findViewById(R.id.password_layout);
+        mSignInButtonG = findViewById(R.id.signin_g_button);
+        mSignInButton = findViewById(R.id.signin_button);
+        mSignUpButton = findViewById(R.id.signup_button);
+        accountEdit = findViewById(R.id.account_edit);
+        passwordEdit = findViewById(R.id.password_edit);
+        accoutLayout = findViewById(R.id.account_layout);
+        passwordLayout = findViewById(R.id.password_layout);
         passwordLayout.setErrorEnabled(true);
         accoutLayout.setErrorEnabled(true);
 
@@ -102,12 +104,12 @@ public class SignInActivity extends AppCompatActivity implements
             case R.id.signin_button:
                 String account = accountEdit.getText().toString();
                 String password = passwordEdit.getText().toString();
-                if(TextUtils.isEmpty(account)){
+                if (TextUtils.isEmpty(account)) {
                     accoutLayout.setError(getString(R.string.plz_input_accout));
                     passwordLayout.setError("");
                     return;
                 }
-                if(TextUtils.isEmpty(password)){
+                if (TextUtils.isEmpty(password)) {
                     accoutLayout.setError("");
                     passwordLayout.setError(getString(R.string.plz_input_pw));
                     return;
@@ -134,12 +136,23 @@ public class SignInActivity extends AppCompatActivity implements
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
     }
 
+    private void writeToDB(){
+        FirebaseUser firebaseUser = mFirebaseAuth.getCurrentUser();
+        String uid = firebaseUser.getUid();
+        User saveUser = new User(uid, firebaseUser.getDisplayName());
+        saveUser.setEmail(firebaseUser.getEmail());
+        if (firebaseUser.getPhotoUrl() != null)
+            saveUser.setPhotoUrl(firebaseUser.getPhotoUrl().toString());
+        FirebaseDatabase.getInstance().getReference().child(StaticValue.Users).child(uid).setValue(saveUser);
+    }
+
     private void login() {
         mFirebaseAuth.signInWithEmailAndPassword(accountEdit.getText().toString(), passwordEdit.getText().toString())
                 .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                     @Override
                     public void onSuccess(AuthResult authResult) {
                         setResult(RESULT_OK);
+                        writeToDB();
                         startActivity(new Intent(SignInActivity.this, MainActivity.class));
                         finish();
                     }
@@ -147,9 +160,9 @@ public class SignInActivity extends AppCompatActivity implements
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(SignInActivity.this, "登入失敗，請檢查email/password",
+                        Toast.makeText(SignInActivity.this, getString(R.string.signin_failed),
                                 Toast.LENGTH_SHORT).show();
-                        mSignInButton.setError("登入失敗，請檢查email/password");
+                        mSignInButton.setError(getString(R.string.signin_failed));
                     }
                 });
     }
@@ -191,9 +204,10 @@ public class SignInActivity extends AppCompatActivity implements
                         // signed in user can be handled in the listener.
                         if (!task.isSuccessful()) {
                             Log.w(TAG, "signInWithCredential", task.getException());
-                            Toast.makeText(SignInActivity.this, "Authentication failed.",
+                            Toast.makeText(SignInActivity.this, getString(R.string.authentication_failed),
                                     Toast.LENGTH_SHORT).show();
                         } else {
+                            writeToDB();
                             startActivity(new Intent(SignInActivity.this, MainActivity.class));
                             finish();
                         }

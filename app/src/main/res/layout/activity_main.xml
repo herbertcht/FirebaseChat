@@ -1,97 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:ads="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.yzucse.android.firebasechat.MainActivity">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/messageRecyclerView"
+    <FrameLayout
+        android:id="@+id/chatlayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:id="@+id/mainLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/messagebar" />
-<!--
-    <LinearLayout
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/messagebar"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
-        <ImageButton
+        <android.support.design.widget.BottomNavigationView
+            android:id="@+id/navigation"
             android:layout_width="match_parent"
-            android:layout_height="36dp"
-            android:layout_weight="1"
-            android:background="@color/colorPrimary"
-            android:src="@drawable/ic_sentiment_satisfied_black_24dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="?android:attr/selectableItemBackgroundBorderless" />
-
-        <ImageButton
-            android:layout_width="match_parent"
-            android:layout_height="36dp"
-            android:layout_weight="1"
-            android:background="@color/colorPrimary"
-            android:src="@drawable/ic_brush_black_24dp"
-            android:clickable="true"
-            android:focusable="true"/>
-
-        <ImageButton
-            android:layout_width="match_parent"
-            android:layout_height="36dp"
-            android:layout_weight="1"
-            android:background="@color/colorPrimary"
-            android:src="@drawable/ic_attach_file_black_24dp"
-            android:clickable="true"
-            android:focusable="true" />
-
-    </LinearLayout>
--->
-    <LinearLayout
-        android:id="@+id/messagebar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:id="@+id/addMessageImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            ads:srcCompat="@drawable/ic_add_black_24dp" />
-
-        <EditText
-            android:id="@+id/messageEditText"
-            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1" />
+            android:background="@color/colorPrimaryDark"
+            app:menu="@menu/navigation" />
 
-        <ImageButton
-            android:id="@+id/sendButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:background="#FFFFFFFF"
-            android:src="@drawable/ic_send_black_24dp"
-            android:clickable="true"
-            android:focusable="true" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ProgressBar
+                android:id="@+id/FragmentProgressBar"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true" />
+
+            <FrameLayout
+                android:id="@+id/myFrameLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </RelativeLayout>
 
     </LinearLayout>
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true" />
 </RelativeLayout>

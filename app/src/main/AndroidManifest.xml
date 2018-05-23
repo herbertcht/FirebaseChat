@@ -19,6 +19,7 @@
 
         <activity android:name=".SignInActivity" />
         <activity android:name=".SignUpActivity" />
+        <activity android:name=".ChatActivity"></activity>
 
     </application>
 

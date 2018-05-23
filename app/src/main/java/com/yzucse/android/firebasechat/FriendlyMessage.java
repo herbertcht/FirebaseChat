@@ -15,6 +15,10 @@
  */
 package com.yzucse.android.firebasechat;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class FriendlyMessage {
 
     private String id;
@@ -22,6 +26,7 @@ public class FriendlyMessage {
     private String name;
     private String photoUrl;
     private String imageUrl;
+    private long timestamp;
 
     public FriendlyMessage() {
     }
@@ -31,6 +36,7 @@ public class FriendlyMessage {
         this.name = name;
         this.photoUrl = photoUrl;
         this.imageUrl = imageUrl;
+        this.timestamp = System.currentTimeMillis();
     }
 
     public String getId() {
@@ -71,5 +77,13 @@ public class FriendlyMessage {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
     }
 }

@@ -15,37 +15,24 @@
  */
 package com.yzucse.android.firebasechat;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.InputFilter;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.firebase.ui.database.SnapshotParser;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -57,50 +44,114 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import de.hdodenhof.circleimageview.CircleImageView;
-
 public class MainActivity extends AppCompatActivity
         implements GoogleApiClient.OnConnectionFailedListener {
-
-    public static final String MESSAGES_CHILD = "messages";
-    public static final int DEFAULT_MSG_LENGTH_LIMIT = 3000;
-    public static final String ANONYMOUS = "anonymous";
-    private static final String TAG = "MainActivity";
-    private static final int REQUEST_INVITE = 1;
-    private static final int REQUEST_IMAGE = 2;
-    private static final String LOADING_IMAGE_URL = "https://www.google.com/images/spin-32.gif";
-    private static final String MESSAGE_SENT_EVENT = "message_sent";
-    private static final String MESSAGE_URL = "http://friendlychat.firebase.google.com/message/";
-    private static final int TIME_INTERVAL = 2000; // # milliseconds, desired time passed between two back presses.
-    private String mUsername;
-    private String mPhotoUrl;
-    private SharedPreferences mSharedPreferences;
+    public FirebaseAuth mFirebaseAuth;
+    public FirebaseUser mFirebaseUser;
+    public ProgressBar mProgressBar;
+    private GlobalData globalData;
+    private ChatRoomFragment mChatRoomFragment;
+    private FriendsFragment mFriendsFragment;
+    private SettingFragment mSettingFragment;
     private GoogleApiClient mGoogleApiClient;
-    private ImageButton mSendButton;
-    private RecyclerView mMessageRecyclerView;
-    private LinearLayoutManager mLinearLayoutManager;
-    private ProgressBar mProgressBar;
-    private EditText mMessageEditText;
-    private ImageView mAddMessageImageView;
-    // Firebase instance variables
-    private FirebaseAuth mFirebaseAuth;
-    private FirebaseUser mFirebaseUser;
-    private DatabaseReference mFirebaseDatabaseReference;
-    private FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>
-            mFirebaseAdapter;
-    private long mBackPressed;
+    private boolean Main_status[] = new boolean[3];
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.chat:
+                    changeToChatRoomFragment();
+                    return true;
+                case R.id.friends:
+                    changeToFriendFragment();
+                    return true;
+            }
+            return false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        // Set default username is anonymous.
-        mUsername = ANONYMOUS;
+        findViewById(R.id.chatlayout).setVisibility(View.INVISIBLE);
+
+        ((BottomNavigationView) findViewById(R.id.navigation)).setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        mProgressBar = findViewById(R.id.FragmentProgressBar);
+        globalData = new GlobalData();
+        globalData.setmFirebaseDatabaseReference(FirebaseDatabase.getInstance().getReference());
+        init();
+        initFragment();
+    }
+
+    private boolean complete() {
+        return globalData.mUser != null/* && globalData.mFriend != null && globalData.mUserChatroom != null*/;
+    }
+
+    private void waitForUser() {
+        while (!complete()) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void setStatus(int item) {
+        for (int i = 0; i < Main_status.length; ++i) Main_status[i] = false;
+        if (item >= 0) Main_status[item] = true;
+    }
+
+    private void changeToChatRoomFragment() {
+        if (Main_status[1]) return;
+        mProgressBar.setVisibility(ProgressBar.VISIBLE);
+        new Thread(new Runnable() {
+            public void run() {
+                waitForUser();
+                mChatRoomFragment = new ChatRoomFragment();
+                mChatRoomFragment.setGlobalData(globalData);
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                transaction.replace(R.id.myFrameLayout, mChatRoomFragment)
+                        .commit();
+                setStatus(1);
+            }
+        }).start();
+        if (complete()) mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+    }
+
+    private void changeToFriendFragment() {
+        if (Main_status[0]) return;
+        mProgressBar.setVisibility(ProgressBar.VISIBLE);
+        new Thread(new Runnable() {
+            public void run() {
+                waitForUser();
+                mFriendsFragment = new FriendsFragment();
+                mFriendsFragment.setGlobalData(globalData);
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                transaction.replace(R.id.myFrameLayout, mFriendsFragment)
+                        .commit();
+                setStatus(0);
+            }
+        }).start();
+        if (complete()) mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+    }
+
+    private void initFragment() {
+        changeToFriendFragment();
+        //changeToChatRoomFragment();
+    }
+
+    private void init() {
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
@@ -110,189 +161,110 @@ public class MainActivity extends AppCompatActivity
         // Initialize Firebase Auth
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
+        globalData.TIMEFORMAT = getString(R.string.timeFormat);
         if (mFirebaseUser == null) {
             // Not signed in, launch the Sign In activity
             startActivity(new Intent(this, SignInActivity.class));
             finish();
             return;
         } else {
-            mUsername = mFirebaseUser.getDisplayName();
+            if (globalData.mUsersDBR != null) {
+                final DatabaseReference usrdbr = globalData.mUsersDBR.child(mFirebaseUser.getUid());
+                if (usrdbr != null) {
+                    usrdbr.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            User user = dataSnapshot.getValue(User.class); // it might be null, so can't just assign it
+                            if (user != null && globalData != null) {
+                                globalData.setmUser(user);
+                                Log.e("globalData.mUser", globalData.mUser.toString());
+                                globalData.setUserStatus(true);
+                                if (complete())
+                                    mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+                            } else Log.e("EEEE", "USER NULL");
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                } else Log.e("FFFF", "FFFF");
+
+               /* final DatabaseReference frienddbr = usrdbr.child(StaticValue.FRIEND);
+                if (frienddbr != null) {
+                    frienddbr.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            GenericTypeIndicator<List<IDAndName>> genericTypeIndicator = new GenericTypeIndicator<List<IDAndName>>() {
+                            };
+                            List<IDAndName> friends = dataSnapshot.getValue(genericTypeIndicator);
+                            globalData.setmFriend(friends);
+                            Log.e("Friends", StaticValue.ListIDAndNametoString(globalData.mFriend));
+                            if (complete()) mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+
+                final DatabaseReference userchatroomdbr = usrdbr.child(StaticValue.CHATROOM);
+                if (userchatroomdbr != null) {
+                    userchatroomdbr.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            GenericTypeIndicator<List<IDAndName>> genericTypeIndicator = new GenericTypeIndicator<List<IDAndName>>() {
+                            };
+                            List<IDAndName> chatrooms = dataSnapshot.getValue(genericTypeIndicator);
+                            globalData.setmUserChatroom(chatrooms);
+                            if (complete()) mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+                            Log.e("UserChatroom", StaticValue.ListIDAndNametoString(globalData.mUserChatroom));
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }*/
+
+            }
+            if (complete()) mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+            Log.e(globalData.mUsersDBR.child(mFirebaseUser.getUid()).toString(), (globalData.mUser == null) + "");
+
             if (mFirebaseUser.getPhotoUrl() != null) {
-                mPhotoUrl = mFirebaseUser.getPhotoUrl().toString();
+                globalData.mPhotoUrl = mFirebaseUser.getPhotoUrl().toString();
             }
         }
-
-        // Initialize ProgressBar and RecyclerView.
-        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
-        mMessageRecyclerView = (RecyclerView) findViewById(R.id.messageRecyclerView);
-        mLinearLayoutManager = new LinearLayoutManager(this);
-        mLinearLayoutManager.setStackFromEnd(true);
-        mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
-
-        // New child entries
-        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
-        SnapshotParser<FriendlyMessage> parser = new SnapshotParser<FriendlyMessage>() {
-            @Override
-            public FriendlyMessage parseSnapshot(DataSnapshot dataSnapshot) {
-                FriendlyMessage friendlyMessage = dataSnapshot.getValue(FriendlyMessage.class);
-                if (friendlyMessage != null) {
-                    friendlyMessage.setId(dataSnapshot.getKey());
-                }
-                return friendlyMessage;
-            }
-        };
-
-        DatabaseReference messagesRef = mFirebaseDatabaseReference.child(MESSAGES_CHILD);
-        FirebaseRecyclerOptions<FriendlyMessage> options =
-                new FirebaseRecyclerOptions.Builder<FriendlyMessage>()
-                        .setQuery(messagesRef, parser)
-                        .build();
-        mFirebaseAdapter = new FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>(options) {
-            @Override
-            public MessageViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-                LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
-                return new MessageViewHolder(inflater.inflate(R.layout.item_message, viewGroup, false));
-            }
-
-            @Override
-            protected void onBindViewHolder(final MessageViewHolder viewHolder,
-                                            int position,
-                                            FriendlyMessage friendlyMessage) {
-                mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-                if (friendlyMessage.getText() != null) {
-                    viewHolder.messageTextView.setText(friendlyMessage.getText());
-                    viewHolder.messageTextView.setVisibility(TextView.VISIBLE);
-                    viewHolder.messageImageView.setVisibility(ImageView.GONE);
-                } else {
-                    String imageUrl = friendlyMessage.getImageUrl();
-                    if (imageUrl.startsWith("gs://")) {
-                        StorageReference storageReference = FirebaseStorage.getInstance()
-                                .getReferenceFromUrl(imageUrl);
-                        storageReference.getDownloadUrl().addOnCompleteListener(
-                                new OnCompleteListener<Uri>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Uri> task) {
-                                        if (task.isSuccessful()) {
-                                            String downloadUrl = task.getResult().toString();
-                                            Glide.with(viewHolder.messageImageView.getContext())
-                                                    .load(downloadUrl)
-                                                    .into(viewHolder.messageImageView);
-                                        } else {
-                                            Log.w(TAG, "Getting download url was not successful.",
-                                                    task.getException());
-                                        }
-                                    }
-                                });
-                    } else {
-                        Glide.with(viewHolder.messageImageView.getContext())
-                                .load(friendlyMessage.getImageUrl())
-                                .into(viewHolder.messageImageView);
-                    }
-                    viewHolder.messageImageView.setVisibility(ImageView.VISIBLE);
-                    viewHolder.messageTextView.setVisibility(TextView.GONE);
-                }
-
-
-                viewHolder.messengerTextView.setText(friendlyMessage.getName());
-                if (friendlyMessage.getPhotoUrl() == null) {
-                    viewHolder.messengerImageView.setImageDrawable(ContextCompat.getDrawable(MainActivity.this,
-                            R.drawable.ic_account_circle_black_36dp));
-                } else {
-                    Glide.with(MainActivity.this)
-                            .load(friendlyMessage.getPhotoUrl())
-                            .into(viewHolder.messengerImageView);
-                }
-
-            }
-        };
-
-        mFirebaseAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onItemRangeInserted(int positionStart, int itemCount) {
-                super.onItemRangeInserted(positionStart, itemCount);
-                int friendlyMessageCount = mFirebaseAdapter.getItemCount();
-                int lastVisiblePosition =
-                        mLinearLayoutManager.findLastCompletelyVisibleItemPosition();
-                // If the recycler view is initially being loaded or the
-                // user is at the bottom of the list, scroll to the bottom
-                // of the list to show the newly added message.
-                if (lastVisiblePosition == -1 ||
-                        (positionStart >= (friendlyMessageCount - 1) &&
-                                lastVisiblePosition == (positionStart - 1))) {
-                    mMessageRecyclerView.scrollToPosition(positionStart);
-                }
-            }
-        });
-
-        mMessageRecyclerView.setAdapter(mFirebaseAdapter);
-        mMessageEditText = (EditText) findViewById(R.id.messageEditText);
-        mMessageEditText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(mSharedPreferences
-                .getInt(CodelabPreferences.FRIENDLY_MSG_LENGTH, DEFAULT_MSG_LENGTH_LIMIT))});
-        mMessageEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (charSequence.toString().trim().length() > 0) {
-                    mSendButton.setEnabled(true);
-                } else {
-                    mSendButton.setEnabled(false);
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-            }
-        });
-
-        mSendButton = (ImageButton) findViewById(R.id.sendButton);
-        mSendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Send messages on click.
-                FriendlyMessage friendlyMessage = new
-                        FriendlyMessage(mMessageEditText.getText().toString(),
-                        mUsername,
-                        mPhotoUrl,
-                        null /* no image */);
-                mFirebaseDatabaseReference.child(MESSAGES_CHILD)
-                        .push().setValue(friendlyMessage);
-                mMessageEditText.setText("");
-            }
-        });
-
-        mAddMessageImageView = (ImageView) findViewById(R.id.addMessageImageView);
-        mAddMessageImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Select image for image message on click.
-                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("image/*");
-                startActivityForResult(intent, REQUEST_IMAGE);
-            }
-        });
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        // Check if user is signed in.
-        // TODO: Add code to check if user is signed in.
+        // Check if mUser is signed in.
+        // TODO: Add code to check if mUser is signed in.
     }
 
     @Override
     public void onPause() {
-        mFirebaseAdapter.stopListening();
+        if (globalData != null)
+            if (globalData.mUser != null)
+                globalData.setUserStatus(false);
         super.onPause();
     }
 
     @Override
     public void onResume() {
+        if (getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
         super.onResume();
-        mFirebaseAdapter.startListening();
+        if (globalData != null)
+            if (globalData.mUser != null)
+                globalData.setUserStatus(true);
     }
 
     @Override
@@ -313,7 +285,8 @@ public class MainActivity extends AppCompatActivity
             case R.id.sign_out_menu:
                 mFirebaseAuth.signOut();
                 Auth.GoogleSignInApi.signOut(mGoogleApiClient);
-                mUsername = ANONYMOUS;
+                globalData.setUserStatus(false);
+                globalData = null;
                 startActivity(new Intent(this, SignInActivity.class));
                 finish();
                 return true;
@@ -326,24 +299,24 @@ public class MainActivity extends AppCompatActivity
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         // An unresolvable error has occurred and Google APIs (including Sign-In) will not
         // be available.
-        Log.d(TAG, "onConnectionFailed:" + connectionResult);
+        Log.d(StaticValue.TAG, "onConnectionFailed:" + connectionResult);
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d(TAG, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
+        Log.d(StaticValue.TAG, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
 
-        if (requestCode == REQUEST_IMAGE) {
+        if (requestCode == StaticValue.REQUEST_IMAGE) {
             if (resultCode == RESULT_OK) {
                 if (data != null) {
                     final Uri uri = data.getData();
-                    Log.d(TAG, "Uri: " + uri.toString());
+                    Log.d(StaticValue.TAG, "Uri: " + uri.toString());
 
-                    FriendlyMessage tempMessage = new FriendlyMessage(null, mUsername, mPhotoUrl,
-                            LOADING_IMAGE_URL);
-                    mFirebaseDatabaseReference.child(MESSAGES_CHILD).push()
+                    FriendlyMessage tempMessage = new FriendlyMessage(null, globalData.mUser.getUsername(), globalData.mPhotoUrl,
+                            StaticValue.LOADING_IMAGE_URL);
+                    globalData.mFirebaseDatabaseReference.child(StaticValue.MESSAGES_CHILD).child(globalData.mChatroom.getChatroomID()).child(StaticValue.MESSAGES).push()
                             .setValue(tempMessage, new DatabaseReference.CompletionListener() {
                                 @Override
                                 public void onComplete(DatabaseError databaseError,
@@ -358,7 +331,7 @@ public class MainActivity extends AppCompatActivity
 
                                         putImageInStorage(storageReference, uri, key);
                                     } else {
-                                        Log.w(TAG, "Unable to write message to database.",
+                                        Log.w(StaticValue.TAG, "Unable to write message to database.",
                                                 databaseError.toException());
                                     }
                                 }
@@ -375,13 +348,13 @@ public class MainActivity extends AppCompatActivity
                     public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                         if (task.isSuccessful()) {
                             FriendlyMessage friendlyMessage =
-                                    new FriendlyMessage(null, mUsername, mPhotoUrl,
+                                    new FriendlyMessage(null, globalData.mUser.getUsername(), globalData.mPhotoUrl,
                                             task.getResult().getMetadata().getDownloadUrl()
                                                     .toString());
-                            mFirebaseDatabaseReference.child(MESSAGES_CHILD).child(key)
+                            globalData.mFirebaseDatabaseReference.child(StaticValue.MESSAGES_CHILD).child(globalData.mChatroom.getChatroomID()).child(StaticValue.MESSAGES).child(key)
                                     .setValue(friendlyMessage);
                         } else {
-                            Log.w(TAG, "Image upload task was not successful.",
+                            Log.w(StaticValue.TAG, "Image upload task was not successful.",
                                     task.getException());
                         }
                     }
@@ -390,28 +363,36 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        if (mBackPressed + TIME_INTERVAL > System.currentTimeMillis()) {
+        // TODO Auto-generated method stub
+        if (findViewById(R.id.chatlayout) != null) {
+            if (findViewById(R.id.chatlayout).getVisibility() == View.VISIBLE) {
+                findViewById(R.id.mainLayout).setVisibility(View.VISIBLE);
+                findViewById(R.id.chatlayout).setVisibility(View.INVISIBLE);
+                setStatus(-1);
+                changeToChatRoomFragment();
+                return;
+            }
+        }
+
+        if (globalData.doubleBackToExitPressedOnce) {
             super.onBackPressed();
             return;
-        } else {
-            Toast.makeText(getBaseContext(), "再一次「返回」離開", Toast.LENGTH_SHORT).show();
         }
 
-        mBackPressed = System.currentTimeMillis();
+        if (getFragmentManager().getBackStackEntryCount() == 0) {
+            globalData.doubleBackToExitPressedOnce = true;
+            Toast.makeText(this, getString(R.string.closeMSG), Toast.LENGTH_SHORT).show();
+        }
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                globalData.doubleBackToExitPressedOnce = false;
+            }
+        }, 2000);
     }
 
-    public static class MessageViewHolder extends RecyclerView.ViewHolder {
-        TextView messageTextView;
-        ImageView messageImageView;
-        TextView messengerTextView;
-        CircleImageView messengerImageView;
+    public void addGroup(View view) {
 
-        public MessageViewHolder(View v) {
-            super(v);
-            messageTextView = (TextView) itemView.findViewById(R.id.messageTextView);
-            messageImageView = (ImageView) itemView.findViewById(R.id.messageImageView);
-            messengerTextView = (TextView) itemView.findViewById(R.id.messengerTextView);
-            messengerImageView = (CircleImageView) itemView.findViewById(R.id.messengerImageView);
-        }
     }
 }

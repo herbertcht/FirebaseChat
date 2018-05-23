@@ -11,11 +11,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.gms.common.util.Strings;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -37,18 +40,18 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
-        mSignUpButton = (Button) findViewById(R.id.signup_button_send);
-        mReturnButton = (Button) findViewById(R.id.signup_button_return);
+        mSignUpButton = findViewById(R.id.signup_button_send);
+        mReturnButton = findViewById(R.id.signup_button_return);
 
-        usernameEdit = (EditText) findViewById(R.id.signup_username_edit);
-        accountEdit = (EditText) findViewById(R.id.signup_account_edit);
-        passwordEdit = (EditText) findViewById(R.id.signup_password_edit);
-        chkpasswordEdit = (EditText) findViewById(R.id.signup_chkpassword_edit);
+        usernameEdit = findViewById(R.id.signup_username_edit);
+        accountEdit = findViewById(R.id.signup_account_edit);
+        passwordEdit = findViewById(R.id.signup_password_edit);
+        chkpasswordEdit = findViewById(R.id.signup_chkpassword_edit);
 
-        usernameLayout = (TextInputLayout) findViewById(R.id.signup_username_layout);
-        accoutLayout = (TextInputLayout) findViewById(R.id.signup_account_layout);
-        passwordLayout = (TextInputLayout) findViewById(R.id.signup_password_layout);
-        chkpasswordLayout = (TextInputLayout) findViewById(R.id.signup_chkpassword_layout);
+        usernameLayout = findViewById(R.id.signup_username_layout);
+        accoutLayout = findViewById(R.id.signup_account_layout);
+        passwordLayout = findViewById(R.id.signup_password_layout);
+        chkpasswordLayout = findViewById(R.id.signup_chkpassword_layout);
         usernameLayout.setErrorEnabled(true);
         passwordLayout.setErrorEnabled(true);
         accoutLayout.setErrorEnabled(true);
@@ -69,19 +72,19 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                 if (TextUtils.isEmpty(username)) {
                     usernameLayout.setError(getString(R.string.plz_input_username));
                     access = false;
-                }else usernameLayout.setError("");
+                }
                 if (TextUtils.isEmpty(account)) {
                     accoutLayout.setError(getString(R.string.plz_input_accout));
                     access = false;
-                }else accoutLayout.setError("");
+                }
                 if (TextUtils.isEmpty(password)) {
                     passwordLayout.setError(getString(R.string.plz_input_pw));
                     access = false;
-                }else passwordLayout.setError("");
+                }
                 if (TextUtils.isEmpty(chkpassword)) {
                     chkpasswordLayout.setError(getString(R.string.plz_input_chkpw));
                     access = false;
-                }else chkpasswordLayout.setError("");
+                }
                 if (!access) return;
                 usernameLayout.setError("");
                 accoutLayout.setError("");
@@ -115,11 +118,18 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            Toast.makeText(SignUpActivity.this, "註冊成功，現在可以用新帳號登入", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(SignUpActivity.this, getString(R.string.signup_success), Toast.LENGTH_SHORT).show();
                             UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                                     .setDisplayName(username)
                                     .build();
-                            FirebaseAuth.getInstance().getCurrentUser().updateProfile(profileUpdates);
+                            mFirebaseAuth.getCurrentUser().updateProfile(profileUpdates);
+                            FirebaseUser firebaseUser = mFirebaseAuth.getCurrentUser();
+                            String uid = mFirebaseAuth.getCurrentUser().getUid();
+                            User saveUser = new User(uid, firebaseUser.getDisplayName());
+                            saveUser.setEmail(firebaseUser.getEmail());
+                            if (firebaseUser.getPhotoUrl() != null)
+                                saveUser.setPhotoUrl(firebaseUser.getPhotoUrl().toString());
+                            FirebaseDatabase.getInstance().getReference().child(StaticValue.Users).child(uid).setValue(saveUser);
                             startActivity(new Intent(SignUpActivity.this, SignInActivity.class));
                             mFirebaseAuth.signOut();
                             finish();
