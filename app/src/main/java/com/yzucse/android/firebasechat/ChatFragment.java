@@ -27,6 +27,7 @@ import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
+import com.google.android.gms.common.util.Strings;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -97,7 +98,8 @@ public class ChatFragment extends Fragment {
             }
         };
 
-        DatabaseReference messagesRef = globalData.mChatRoomDBR.child(globalData.mChatroom.getChatroomID()).child(StaticValue.MESSAGES);
+        DatabaseReference messagesRef = globalData.getmChatRoomDBR().child(globalData.getmChatroom()
+                .getChatroomID()).child(StaticValue.MESSAGES);
 
         FirebaseRecyclerOptions<FriendlyMessage> options =
                 new FirebaseRecyclerOptions.Builder<FriendlyMessage>()
@@ -140,9 +142,10 @@ public class ChatFragment extends Fragment {
                     globalData.setViewVisibility(viewHolder.messagerDateTextView, TextView.GONE);
                     /*}
                     lastT[0] = globalData.getTimeByFormat(t, dateFormat);*/
-                    globalData.setTextViewText(viewHolder.messengerTimestampView, globalData.getTimeByFormat(t, globalData.TIMEFORMAT));
+                    globalData.setTextViewText(viewHolder.messengerTimestampView, globalData
+                            .getTimeByFormat(t, globalData.getTIMEFORMAT()));
                 }
-                if (friendlyMessage.getText() != null) {
+                if (!Strings.isEmptyOrWhitespace(friendlyMessage.getText())) {
                     globalData.setTextViewText(viewHolder.messageTextView, friendlyMessage.getText());
                     globalData.setViewVisibility(viewHolder.messageTextView, TextView.VISIBLE);
                     globalData.setViewVisibility(viewHolder.messageImageView, ImageView.GONE);
@@ -224,15 +227,15 @@ public class ChatFragment extends Fragment {
             }
         });
 
-        final DatabaseReference chatroomref = globalData.mFirebaseDatabaseReference.child(StaticValue.MESSAGES_CHILD).child(globalData.mChatroom.getChatroomID());
+        final DatabaseReference chatroomref = globalData.getmChatRoomDBR().child(globalData.getmChatroom().getChatroomID());
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String MSG = mMessageEditText.getText().toString();
                 FriendlyMessage friendlyMessage = new
                         FriendlyMessage(MSG,
-                        globalData.mUser.getUsername(),
-                        globalData.mPhotoUrl,
+                        globalData.getmUser().getUsername(),
+                        globalData.getmPhotoUrl(),
                         null /* no image */);
                 String key = chatroomref.child(StaticValue.MESSAGES).push().getKey();
                 chatroomref.child(StaticValue.MESSAGES).child(key).setValue(friendlyMessage);
@@ -255,7 +258,7 @@ public class ChatFragment extends Fragment {
                 intent.setType("image/*");
 
                 Map<String, Object> taskMap = new HashMap<>();
-                taskMap.put("lastMsg", globalData.mUser.getUsername() + " Send Picture");
+                taskMap.put("lastMsg", globalData.getmUser().getUsername() + " Send Picture");
                 chatroomref.updateChildren(taskMap);
                 taskMap.clear();
                 startActivityForResult(intent, StaticValue.REQUEST_IMAGE);

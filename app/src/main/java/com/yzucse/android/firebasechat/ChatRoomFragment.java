@@ -100,6 +100,11 @@ public class ChatRoomFragment extends Fragment {
     public void ChatRoomInit() {
         //getActivity().setContentView(R.layout.chat_list);
 
+        if(globalData.isNullorEmptyMap(globalData.getmUser().getChatrooms())) {
+            noitemText.setVisibility(View.VISIBLE);
+            mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+        }
+
         // New child entries
         SnapshotParser<ChatRoom> parser = new SnapshotParser<ChatRoom>() {
             @Override
@@ -107,7 +112,7 @@ public class ChatRoomFragment extends Fragment {
                 return dataSnapshot.getValue(ChatRoom.class);
             }
         };
-        Query messagesRef = globalData.mChatRoomDBR.orderByChild(StaticValue.USERID + "/" + globalData.mUser.getUserID()).equalTo(true);
+        Query messagesRef = globalData.getmChatRoomDBR().orderByChild(StaticValue.USERID + "/" + globalData.getmUser().getUserID()).equalTo(true);
 
         FirebaseRecyclerOptions<ChatRoom> options =
                 new FirebaseRecyclerOptions.Builder<ChatRoom>()
@@ -136,11 +141,11 @@ public class ChatRoomFragment extends Fragment {
 
                 Log.e("ChatRoom", chatroom.toString());
 
-                globalData.setTextViewText(viewHolder.chatroomNameView, globalData.mUser.getChatroomName(chatroom));
+                globalData.setTextViewText(viewHolder.chatroomNameView, globalData.getmUser().getChatroomName(chatroom));
 
                 String lastMSG = chatroom.getLastMsg();
                 if (!Strings.isEmptyOrWhitespace(lastMSG)) {
-                    DatabaseReference messagedbr = globalData.mChatRoomDBR.child(chatroom.getChatroomID())
+                    DatabaseReference messagedbr = globalData.getmChatRoomDBR().child(chatroom.getChatroomID())
                             .child(StaticValue.MESSAGES).child(chatroom.getLastMsg());
 
                     if (messagedbr != null) {
@@ -150,7 +155,8 @@ public class ChatRoomFragment extends Fragment {
                                 FriendlyMessage msg = dataSnapshot.getValue(FriendlyMessage.class); // it might be null, so can't just assign it
                                 if (msg != null) {
                                     globalData.setTextViewText(viewHolder.chatroomTextView, msg.getText());
-                                    globalData.setTextViewText(viewHolder.chatroomTimestampView, globalData.getTimeByFormat(msg.getTimestamp(), globalData.TIMEFORMAT));
+                                    globalData.setTextViewText(viewHolder.chatroomTimestampView,
+                                            globalData.getTimeByFormat(msg.getTimestamp(), globalData.getTIMEFORMAT()));
                                 }
                             }
 
@@ -168,7 +174,7 @@ public class ChatRoomFragment extends Fragment {
                 viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        globalData.mChatroom = chatroom;
+                        globalData.setmChatroom(chatroom);
                         mFirebaseAdapter.stopListening();
                         Activity thisAct = getActivity();
                         thisAct.findViewById(R.id.mainLayout).setVisibility(View.INVISIBLE);
@@ -185,11 +191,6 @@ public class ChatRoomFragment extends Fragment {
             }
 
         };
-
-        if (mFirebaseAdapter.getItemCount() == 0) {
-            noitemText.setVisibility(View.VISIBLE);
-            mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-        }
 
         /*mFirebaseAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override

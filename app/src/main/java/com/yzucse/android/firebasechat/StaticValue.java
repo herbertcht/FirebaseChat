@@ -29,6 +29,7 @@ public class StaticValue {
     public static final String MESSAGE_URL = "http://friendlychat.firebase.google.com/message/";
 
 
+    /****************************** Static Utilities **********************************/
     public static String list2String(final List<String> item) {
         StringBuilder sb = new StringBuilder();
         sb.append("{ ");
@@ -42,7 +43,6 @@ public class StaticValue {
         sb.append(" }");
         return sb.toString();
     }
-
 
     static public String Map2String(Map<String, ?> itemList) {
         StringBuilder sb = new StringBuilder();

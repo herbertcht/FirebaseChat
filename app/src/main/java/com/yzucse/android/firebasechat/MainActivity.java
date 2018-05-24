@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity
     private SettingFragment mSettingFragment;
     private GoogleApiClient mGoogleApiClient;
     private boolean Main_status[] = new boolean[3];
+    private boolean doubleBackToExitPressedOnce = false;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -92,7 +93,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private boolean complete() {
-        return globalData.mUser != null/* && globalData.mFriend != null && globalData.mUserChatroom != null*/;
+        return globalData.getmUser() != null/* && globalData.mFriend != null && globalData.mUserChatroom != null*/;
     }
 
     private void waitForUser() {
@@ -161,15 +162,15 @@ public class MainActivity extends AppCompatActivity
         // Initialize Firebase Auth
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
-        globalData.TIMEFORMAT = getString(R.string.timeFormat);
+        globalData.setTIMEFORMAT(getString(R.string.timeFormat));
         if (mFirebaseUser == null) {
             // Not signed in, launch the Sign In activity
             startActivity(new Intent(this, SignInActivity.class));
             finish();
             return;
         } else {
-            if (globalData.mUsersDBR != null) {
-                final DatabaseReference usrdbr = globalData.mUsersDBR.child(mFirebaseUser.getUid());
+            if (globalData.getmUsersDBR() != null) {
+                final DatabaseReference usrdbr = globalData.getmUsersDBR().child(mFirebaseUser.getUid());
                 if (usrdbr != null) {
                     usrdbr.addValueEventListener(new ValueEventListener() {
                         @Override
@@ -177,7 +178,7 @@ public class MainActivity extends AppCompatActivity
                             User user = dataSnapshot.getValue(User.class); // it might be null, so can't just assign it
                             if (user != null && globalData != null) {
                                 globalData.setmUser(user);
-                                Log.e("globalData.mUser", globalData.mUser.toString());
+                                Log.e("globalData.mUser", globalData.getmUser().toString());
                                 globalData.setUserStatus(true);
                                 if (complete())
                                     mProgressBar.setVisibility(ProgressBar.INVISIBLE);
@@ -235,7 +236,7 @@ public class MainActivity extends AppCompatActivity
             if (complete()) mProgressBar.setVisibility(ProgressBar.INVISIBLE);
 
             if (mFirebaseUser.getPhotoUrl() != null) {
-                globalData.mPhotoUrl = mFirebaseUser.getPhotoUrl().toString();
+                globalData.setmPhotoUrl(mFirebaseUser.getPhotoUrl().toString());
             }
         }
     }
@@ -249,26 +250,30 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onPause() {
-        if (globalData != null)
-            if (globalData.mUser != null)
-                globalData.setUserStatus(false);
         super.onPause();
     }
 
     @Override
     public void onResume() {
+        if (globalData != null)
+            if (globalData.getmUser() != null) {
+                globalData.setUserStatus(true);
+                Log.e("RE", "on");
+            }
         if (getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
         super.onResume();
-        if (globalData != null)
-            if (globalData.mUser != null)
-                globalData.setUserStatus(true);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (globalData != null)
+            if (globalData.getmUser() != null) {
+                globalData.setUserStatus(false);
+                Log.e("DE", "off");
+            }
     }
 
     @Override
@@ -299,7 +304,7 @@ public class MainActivity extends AppCompatActivity
         // An unresolvable error has occurred and Google APIs (including Sign-In) will not
         // be available.
         Log.d(StaticValue.TAG, "onConnectionFailed:" + connectionResult);
-        Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.Google_server_error), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -313,9 +318,10 @@ public class MainActivity extends AppCompatActivity
                     final Uri uri = data.getData();
                     Log.d(StaticValue.TAG, "Uri: " + uri.toString());
 
-                    FriendlyMessage tempMessage = new FriendlyMessage(null, globalData.mUser.getUsername(), globalData.mPhotoUrl,
+                    FriendlyMessage tempMessage = new FriendlyMessage(null, globalData.getmUser().getUsername(), globalData.getmPhotoUrl(),
                             StaticValue.LOADING_IMAGE_URL);
-                    globalData.mFirebaseDatabaseReference.child(StaticValue.MESSAGES_CHILD).child(globalData.mChatroom.getChatroomID()).child(StaticValue.MESSAGES).push()
+                    globalData.getmChatRoomDBR()
+                            .child(globalData.getmChatroom().getChatroomID()).child(StaticValue.MESSAGES).push()
                             .setValue(tempMessage, new DatabaseReference.CompletionListener() {
                                 @Override
                                 public void onComplete(DatabaseError databaseError,
@@ -347,10 +353,12 @@ public class MainActivity extends AppCompatActivity
                     public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                         if (task.isSuccessful()) {
                             FriendlyMessage friendlyMessage =
-                                    new FriendlyMessage(null, globalData.mUser.getUsername(), globalData.mPhotoUrl,
+                                    new FriendlyMessage(null, globalData.getmUser().getUsername(),
+                                            globalData.getmPhotoUrl(),
                                             task.getResult().getMetadata().getDownloadUrl()
                                                     .toString());
-                            globalData.mFirebaseDatabaseReference.child(StaticValue.MESSAGES_CHILD).child(globalData.mChatroom.getChatroomID()).child(StaticValue.MESSAGES).child(key)
+                            globalData.getmChatRoomDBR().child(globalData.getmChatroom().getChatroomID())
+                                    .child(StaticValue.MESSAGES).child(key)
                                     .setValue(friendlyMessage);
                         } else {
                             Log.w(StaticValue.TAG, "Image upload task was not successful.",
@@ -373,20 +381,20 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
-        if (globalData.doubleBackToExitPressedOnce) {
+        if (doubleBackToExitPressedOnce) {
             super.onBackPressed();
             return;
         }
 
         if (getFragmentManager().getBackStackEntryCount() == 0) {
-            globalData.doubleBackToExitPressedOnce = true;
+            doubleBackToExitPressedOnce = true;
             Toast.makeText(this, getString(R.string.closeMSG), Toast.LENGTH_SHORT).show();
         }
         new Handler().postDelayed(new Runnable() {
 
             @Override
             public void run() {
-                globalData.doubleBackToExitPressedOnce = false;
+                doubleBackToExitPressedOnce = false;
             }
         }, 2000);
     }

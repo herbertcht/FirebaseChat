@@ -12,19 +12,19 @@ import com.google.firebase.database.DatabaseReference;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class GlobalData implements Serializable {
-    public boolean doubleBackToExitPressedOnce = false;
-    public String mPhotoUrl;
-    public User mUser;
-    public ChatRoom mChatroom;
+    private String mPhotoUrl;
+    private User mUser;
+    private ChatRoom mChatroom;
     // Firebase instance variables
-    public DatabaseReference mFirebaseDatabaseReference;
-    public DatabaseReference mUsersDBR;
-    public DatabaseReference mChatRoomDBR;
-    public String TIMEFORMAT;
+    private DatabaseReference mFirebaseDatabaseReference;
+    private DatabaseReference mUsersDBR;
+    private DatabaseReference mChatRoomDBR;
+    private String TIMEFORMAT;
 
     public GlobalData() {
     }
@@ -32,18 +32,9 @@ public class GlobalData implements Serializable {
     public GlobalData(GlobalData globalData) {
         setmUser(globalData.getmUser());
         setmFirebaseDatabaseReference(globalData.getmFirebaseDatabaseReference());
-        setDoubleBackToExitPressedOnce(globalData.isDoubleBackToExitPressedOnce());
         setmPhotoUrl(globalData.mPhotoUrl);
         setmChatroom(globalData.mChatroom);
         TIMEFORMAT = globalData.TIMEFORMAT;
-    }
-
-    public boolean isDoubleBackToExitPressedOnce() {
-        return doubleBackToExitPressedOnce;
-    }
-
-    public void setDoubleBackToExitPressedOnce(boolean doubleBackToExitPressedOnce) {
-        this.doubleBackToExitPressedOnce = doubleBackToExitPressedOnce;
     }
 
     public DatabaseReference getmChatRoomDBR() {
@@ -119,6 +110,23 @@ public class GlobalData implements Serializable {
         this.mUser.setBlockade(mUser.getBlockade());
     }
 
+    public boolean isNullorEmptyMap(Map<String, ?> map)
+    {
+        if(map == null) return true;
+        if(map.isEmpty()) return true;
+        return false;
+    }
+
+    public String getTIMEFORMAT() {
+        return TIMEFORMAT;
+    }
+
+    public void setTIMEFORMAT(String TIMEFORMAT) {
+        this.TIMEFORMAT = TIMEFORMAT;
+    }
+
+    /************************* Utilities ******************************/
+
     public void setTextViewText(TextView view, String text) {
         if (!Strings.isEmptyOrWhitespace(text))
             view.setText(text);
@@ -133,7 +141,6 @@ public class GlobalData implements Serializable {
     public String getTimeByFormat(Object time, String format) {
         return new SimpleDateFormat(format).format(time);
     }
-
 
     public void setImage(CircleImageView view, String uri, Activity activity) {
         if (!Strings.isEmptyOrWhitespace(uri)) {

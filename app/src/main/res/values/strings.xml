@@ -74,4 +74,6 @@
 
     <string name="authentication_failed">Authentication failed!</string>
 
+    <string name="Google_server_error">Google Play Services error.</string>
+
 </resources>

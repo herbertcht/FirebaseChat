@@ -85,25 +85,31 @@ public class FriendsFragment extends Fragment {
 
     final private void generateChat(final User friend) {
         ChatRoom friendChat = new ChatRoom();
-        friendChat.setChatroomID(globalData.mUser.getUserID() + friend.getUserID());
-        friendChat.setChatroomName("chat");
+        friendChat.setChatroomID(globalData.getmUser().getUserID() + friend.getUserID());
+        friendChat.setChatroomName(StaticValue.CHAT);
         Map<String, Boolean> savedata = new HashMap<>();
-        savedata.put(globalData.mUser.getUserID(), true);
+        savedata.put(globalData.getmUser().getUserID(), true);
         savedata.put(friend.getUserID(), true);
         friendChat.setUserID(savedata);
-        globalData.mChatRoomDBR.child(globalData.mUser.getUserID() + friend.getUserID()).setValue(friendChat);
+        globalData.getmChatRoomDBR().child(globalData.getmUser().getUserID() +
+                friend.getUserID()).setValue(friendChat);
         globalData.setmChatroom(friendChat);
-        globalData.mUser.addChatroom(friendChat.getChatroomID(), friend.getUsername());
-        friend.addChatroom(friendChat.getChatroomID(), globalData.mUser.getUsername());
+        globalData.getmUser().addChatroom(friendChat.getChatroomID(), friend.getUsername());
+        friend.addChatroom(friendChat.getChatroomID(), globalData.getmUser().getUsername());
         Map<String, Object> updatecharoom = new HashMap<>();
-        updatecharoom.put(StaticValue.CHATROOM, globalData.mUser.getChatrooms());
-        globalData.mUsersDBR.child(globalData.mUser.getUserID()).updateChildren(updatecharoom);
+        updatecharoom.put(StaticValue.CHATROOM, globalData.getmUser().getChatrooms());
+        globalData.getmUsersDBR().child(globalData.getmUser().getUserID()).updateChildren(updatecharoom);
         updatecharoom.put(StaticValue.CHATROOM, friend.getChatrooms());
-        globalData.mUsersDBR.child(friend.getUserID()).updateChildren(updatecharoom);
+        globalData.getmUsersDBR().child(friend.getUserID()).updateChildren(updatecharoom);
     }
 
     public void FriendsInit() {
         //getActivity().setContentView(R.layout.chat_list);
+
+        if(globalData.isNullorEmptyMap(globalData.getmUser().getFriends())){
+            noitemText.setVisibility(View.VISIBLE);
+            mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+        }
 
         // New child entries
         SnapshotParser<User> parser = new SnapshotParser<User>() {
@@ -113,7 +119,8 @@ public class FriendsFragment extends Fragment {
             }
         };
 
-        Query messagesRef = globalData.mUsersDBR.orderByChild(StaticValue.BLOCKADE + "/" + globalData.mUser.getUserID()).equalTo(false);
+        Query messagesRef = globalData.getmUsersDBR().orderByChild(StaticValue.BLOCKADE + "/"
+                + globalData.getmUser().getUserID()).equalTo(false);
 
         FirebaseRecyclerOptions<User> options =
                 new FirebaseRecyclerOptions.Builder<User>()
@@ -143,20 +150,20 @@ public class FriendsFragment extends Fragment {
                     //Log.e(key,muser.getFriends().get(key));
                     //if(fm.containsKey(friend.getUserID()))
                     globalData.setTextViewText(viewHolder.friendNameView,
-                            globalData.mUser.getFriends().get(friend.getUserID()));
+                            globalData.getmUser().getFriends().get(friend.getUserID()));
                     viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            final DatabaseReference fchatdbr = globalData.mChatRoomDBR;
+                            final DatabaseReference fchatdbr = globalData.getmChatRoomDBR();
                             final String[] key = new String[1];
                             key[0] = "";
                             fchatdbr.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                    if (dataSnapshot.hasChild(globalData.mUser.getUserID() + friend.getUserID())) {
-                                        key[0] = globalData.mUser.getUserID() + friend.getUserID();
-                                    } else if (dataSnapshot.hasChild(friend.getUserID() + globalData.mUser.getUserID())) {
-                                        key[0] = friend.getUserID() + globalData.mUser.getUserID();
+                                    if (dataSnapshot.hasChild(globalData.getmUser().getUserID() + friend.getUserID())) {
+                                        key[0] = globalData.getmUser().getUserID() + friend.getUserID();
+                                    } else if (dataSnapshot.hasChild(friend.getUserID() + globalData.getmUser().getUserID())) {
+                                        key[0] = friend.getUserID() + globalData.getmUser().getUserID();
                                     }
                                     if (Strings.isEmptyOrWhitespace(key[0])) {
                                         generateChat(friend);
@@ -196,11 +203,6 @@ public class FriendsFragment extends Fragment {
                 }
             }
         };
-
-        if (mFirebaseAdapter.getItemCount() == 0) {
-            noitemText.setVisibility(View.VISIBLE);
-            mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-        }
 
         /*mFirebaseAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
