@@ -234,7 +234,7 @@ public class ChatFragment extends Fragment {
                 String MSG = mMessageEditText.getText().toString();
                 FriendlyMessage friendlyMessage = new
                         FriendlyMessage(MSG,
-                        globalData.getmUser().getUsername(),
+                        globalData.getmUser(),
                         globalData.getmPhotoUrl(),
                         null /* no image */);
                 String key = chatroomref.child(StaticValue.MESSAGES).push().getKey();

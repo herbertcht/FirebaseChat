@@ -28,9 +28,10 @@ public class FriendlyMessage {
     public FriendlyMessage() {
     }
 
-    public FriendlyMessage(String text, String senderID, String photoUrl, String imageUrl) {
+    public FriendlyMessage(String text, User sender, String photoUrl, String imageUrl) {
         this.text = text;
-        this.senderID = senderID;
+        this.senderID = sender.getUserID();
+        this.senderName = sender.getUsername();
         this.photoUrl = photoUrl;
         this.imageUrl = imageUrl;
         this.timestamp = System.currentTimeMillis();

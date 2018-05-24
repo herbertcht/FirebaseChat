@@ -321,7 +321,7 @@ public class MainActivity extends AppCompatActivity
                     final Uri uri = data.getData();
                     Log.d(StaticValue.TAG, "Uri: " + uri.toString());
 
-                    FriendlyMessage tempMessage = new FriendlyMessage(null, globalData.getmUser().getUsername(), globalData.getmPhotoUrl(),
+                    FriendlyMessage tempMessage = new FriendlyMessage(null, globalData.getmUser(), globalData.getmPhotoUrl(),
                             StaticValue.LOADING_IMAGE_URL);
                     globalData.getmChatRoomDBR()
                             .child(globalData.getmChatroom().getChatroomID()).child(StaticValue.MESSAGES).push()
@@ -356,7 +356,7 @@ public class MainActivity extends AppCompatActivity
                     public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                         if (task.isSuccessful()) {
                             FriendlyMessage friendlyMessage =
-                                    new FriendlyMessage(null, globalData.getmUser().getUsername(),
+                                    new FriendlyMessage(null, globalData.getmUser(),
                                             globalData.getmPhotoUrl(),
                                             task.getResult().getMetadata().getDownloadUrl()
                                                     .toString());
