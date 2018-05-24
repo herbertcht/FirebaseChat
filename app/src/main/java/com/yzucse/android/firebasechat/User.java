@@ -3,15 +3,13 @@ package com.yzucse.android.firebasechat;
 import com.google.android.gms.common.util.Strings;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class User implements Serializable {
     private String username;
     private String userID;
-    private List<String> stickers; // this structure might be changed
+    private Map<String, Boolean> stickers; // this structure might be changed
     private Map<String, String> friends;
     private Map<String, Boolean> blockade;
     private Map<String, String> chatrooms;
@@ -76,14 +74,14 @@ public class User implements Serializable {
         this.username = username;
     }
 
-    public List<String> getStickers() {
+    public Map<String, Boolean> getStickers() {
         return stickers;
     }
 
-    public void setStickers(List<String> stickers) {
-        if (stickers != null) {
-            this.stickers = new ArrayList<>();
-            this.stickers.addAll(stickers);
+    public void setStickers(Map<String, Boolean> stickers) {
+        if (!StaticValue.isNullorEmptyMap(stickers)) {
+            this.stickers = new HashMap<>();
+            this.stickers.putAll(stickers);
         }
     }
 
@@ -92,11 +90,10 @@ public class User implements Serializable {
     }
 
     public void setFriends(Map<String, String> friends) {
-        if (friends != null)
-            if (!friends.isEmpty()) {
-                this.friends = new HashMap<>();
-                this.friends.putAll(friends);
-            }
+        if (!StaticValue.isNullorEmptyMap(friends)) {
+            this.friends = new HashMap<>();
+            this.friends.putAll(friends);
+        }
     }
 
     public void addFriend(String id, String name) {
@@ -111,11 +108,10 @@ public class User implements Serializable {
     }
 
     public void setBlockade(Map<String, Boolean> blockade) {
-        if (blockade != null)
-            if (!blockade.isEmpty()) {
-                this.blockade = new HashMap<>();
-                this.blockade.putAll(blockade);
-            }
+        if (!StaticValue.isNullorEmptyMap(blockade)) {
+            this.blockade = new HashMap<>();
+            this.blockade.putAll(blockade);
+        }
     }
 
     public void addBlockade(String id) {
@@ -129,11 +125,10 @@ public class User implements Serializable {
     }
 
     public void setChatrooms(Map<String, String> chatrooms) {
-        if (chatrooms != null)
-            if (!chatrooms.isEmpty()) {
-                this.chatrooms = new HashMap<>();
-                this.chatrooms.putAll(chatrooms);
-            }
+        if (!StaticValue.isNullorEmptyMap(chatrooms)) {
+            this.chatrooms = new HashMap<>();
+            this.chatrooms.putAll(chatrooms);
+        }
     }
 
     public String getChatroomName(ChatRoom chatRoom) {
@@ -149,7 +144,7 @@ public class User implements Serializable {
     public String getFriendsName(String friendID, String defaultName) {
         if (!Strings.isEmptyOrWhitespace(friendID)) {
             if (!StaticValue.isNullorEmptyMap(friends)) {
-                if(friends.containsKey(friendID)) return friends.get(friendID);
+                if (friends.containsKey(friendID)) return friends.get(friendID);
             }
         }
         return defaultName;
@@ -175,7 +170,7 @@ public class User implements Serializable {
                 "'online' : '" + online + "'" + ", " + "'name' : '" + username + "'"
                 + ", " + "'id' : '" + userID + "'" + ", " + "'chatrooms' : " + StaticValue.Map2String(chatrooms)
                 + ", " + "'friends' : " + StaticValue.Map2String(friends) + ", " + "'blockade' : " + StaticValue.Map2String(blockade)
-                + ", " + "'stickers' : " + StaticValue.list2String(stickers) + ", " + "'sign' : '" + sign + "'" + ", " + "'photoUrl' : '" + photoUrl + "' "
+                + ", " + "'stickers' : " + StaticValue.Map2String(stickers) + ", " + "'sign' : '" + sign + "'" + ", " + "'photoUrl' : '" + photoUrl + "' "
                 + ", " + "'email' : '" + email + "'"
                 + " }";
     }

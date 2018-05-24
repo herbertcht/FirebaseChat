@@ -1,0 +1,58 @@
+{
+	"Messagse" : 
+	{
+		string(chat room ID) : 
+		{
+			"chatroomID" : string(chat room ID),
+			"chatroomName" : string(chat room name),
+			"lastMsg" : string(messages ID),
+			"messages" :
+			{
+				string(message ID) :
+				{
+					"senderID" : string(sender ID),
+					"senderName" : string(sender name),
+					"text" : string(sender context),
+					"imageUrl" : string(URL)
+				}, ...
+			},
+			"userID" :
+			{
+				string(user ID) : bool(), ...
+			}
+		}, ...
+	},
+	"Users" : 
+	{
+		string(user ID) :
+		{
+			"email" : string(user email),
+			"online" : bool(),
+			"userID" : string(user ID),
+			"username" : string(user name),
+			"blockade" : 
+			{
+				string(friend id) : bool(), ...
+			},
+			"chatrooms" :
+			{
+				string(chatroom id) : string(chat room), ...
+			},
+			"friends" :
+			{
+				string(friend id) : string(friend name), ...
+			},
+			"stickers" :
+			{
+				string(sticker id) : bool(), ...
+			}
+		}
+	}
+	"Stickers" :
+	{
+		string(sticker id) : 
+		{
+			int(serial number) : string(image URL), ...
+		}
+	}
+}
