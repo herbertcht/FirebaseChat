@@ -137,15 +137,22 @@ public class User implements Serializable {
     }
 
     public String getChatroomName(ChatRoom chatRoom) {
-        if (chatrooms != null && chatRoom != null) {
-            if (!chatrooms.isEmpty()) {
-                if (!Strings.isEmptyOrWhitespace(chatRoom.getChatroomID())) {
-                    String name = chatrooms.get(chatRoom.getChatroomID());
-                    if (!Strings.isEmptyOrWhitespace(name)) return name;
-                }
+        if (chatRoom != null) {
+            if (!Strings.isEmptyOrWhitespace(chatRoom.getChatroomID()) && !StaticValue.isNullorEmptyMap(chatrooms)) {
+                String name = chatrooms.get(chatRoom.getChatroomID());
+                if (!Strings.isEmptyOrWhitespace(name)) return name;
             }
         }
         return chatRoom.getChatroomName();
+    }
+
+    public String getFriendsName(String friendID, String defaultName) {
+        if (!Strings.isEmptyOrWhitespace(friendID)) {
+            if (!StaticValue.isNullorEmptyMap(friends)) {
+                if(friends.containsKey(friendID)) return friends.get(friendID);
+            }
+        }
+        return defaultName;
     }
 
     public void addChatroom(String id, String name) {

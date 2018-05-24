@@ -106,7 +106,7 @@ public class FriendsFragment extends Fragment {
     public void FriendsInit() {
         //getActivity().setContentView(R.layout.chat_list);
 
-        if(globalData.isNullorEmptyMap(globalData.getmUser().getFriends())){
+        if(StaticValue.isNullorEmptyMap(globalData.getmUser().getFriends())){
             noitemText.setVisibility(View.VISIBLE);
             mProgressBar.setVisibility(ProgressBar.INVISIBLE);
         }
@@ -144,12 +144,12 @@ public class FriendsFragment extends Fragment {
                 if (friend != null) {
                     mProgressBar.setVisibility(ProgressBar.INVISIBLE);
                     noitemText.setVisibility(View.INVISIBLE);
-                    globalData.setTextViewText(viewHolder.friendSignView, friend.getSign());
-                    globalData.setTextViewText(viewHolder.friendStatusView, STATUS[friend.getOnline() ? 1 : 0]);
-                    globalData.setImage(viewHolder.friendImageView, friend.getPhotoUrl(), getActivity());
+                    StaticValue.setTextViewText(viewHolder.friendSignView, friend.getSign());
+                    StaticValue.setTextViewText(viewHolder.friendStatusView, STATUS[friend.getOnline() ? 1 : 0]);
+                    StaticValue.setImage(viewHolder.friendImageView, friend.getPhotoUrl(), getActivity());
                     //Log.e(key,muser.getFriends().get(key));
                     //if(fm.containsKey(friend.getUserID()))
-                    globalData.setTextViewText(viewHolder.friendNameView,
+                    StaticValue.setTextViewText(viewHolder.friendNameView,
                             globalData.getmUser().getFriends().get(friend.getUserID()));
                     viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override

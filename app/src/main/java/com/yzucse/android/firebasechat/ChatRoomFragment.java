@@ -100,7 +100,7 @@ public class ChatRoomFragment extends Fragment {
     public void ChatRoomInit() {
         //getActivity().setContentView(R.layout.chat_list);
 
-        if(globalData.isNullorEmptyMap(globalData.getmUser().getChatrooms())) {
+        if(StaticValue.isNullorEmptyMap(globalData.getmUser().getChatrooms())) {
             noitemText.setVisibility(View.VISIBLE);
             mProgressBar.setVisibility(ProgressBar.INVISIBLE);
         }
@@ -141,7 +141,7 @@ public class ChatRoomFragment extends Fragment {
 
                 Log.e("ChatRoom", chatroom.toString());
 
-                globalData.setTextViewText(viewHolder.chatroomNameView, globalData.getmUser().getChatroomName(chatroom));
+                StaticValue.setTextViewText(viewHolder.chatroomNameView, globalData.getmUser().getChatroomName(chatroom));
 
                 String lastMSG = chatroom.getLastMsg();
                 if (!Strings.isEmptyOrWhitespace(lastMSG)) {
@@ -154,9 +154,9 @@ public class ChatRoomFragment extends Fragment {
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 FriendlyMessage msg = dataSnapshot.getValue(FriendlyMessage.class); // it might be null, so can't just assign it
                                 if (msg != null) {
-                                    globalData.setTextViewText(viewHolder.chatroomTextView, msg.getText());
-                                    globalData.setTextViewText(viewHolder.chatroomTimestampView,
-                                            globalData.getTimeByFormat(msg.getTimestamp(), globalData.getTIMEFORMAT()));
+                                    StaticValue.setTextViewText(viewHolder.chatroomTextView, msg.getText());
+                                    StaticValue.setTextViewText(viewHolder.chatroomTimestampView,
+                                            StaticValue.getTimeByFormat(msg.getTimestamp(), globalData.getTIMEFORMAT()));
                                 }
                             }
 
@@ -169,7 +169,7 @@ public class ChatRoomFragment extends Fragment {
                 }
 
 
-                globalData.setImage(viewHolder.chatroomImageView, chatroom.getPhotoUrl(), getActivity());
+                StaticValue.setImage(viewHolder.chatroomImageView, chatroom.getPhotoUrl(), getActivity());
 
                 viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override

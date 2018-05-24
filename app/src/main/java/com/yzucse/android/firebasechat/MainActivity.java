@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity
     private GoogleApiClient mGoogleApiClient;
     private boolean Main_status[] = new boolean[3];
     private boolean doubleBackToExitPressedOnce = false;
+    private boolean isOffline = false;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -153,7 +154,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void init() {
-
+        if(isOffline) return;
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API)
@@ -259,6 +260,7 @@ public class MainActivity extends AppCompatActivity
             if (globalData.getmUser() != null) {
                 globalData.setUserStatus(true);
                 Log.e("RE", "on");
+                isOffline = false;
             }
         if (getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -273,6 +275,7 @@ public class MainActivity extends AppCompatActivity
             if (globalData.getmUser() != null) {
                 globalData.setUserStatus(false);
                 Log.e("DE", "off");
+                isOffline =true;
             }
     }
 

@@ -1,7 +1,18 @@
 package com.yzucse.android.firebasechat;
 
+import android.app.Activity;
+import android.support.v4.content.ContextCompat;
+import android.view.View;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.google.android.gms.common.util.Strings;
+
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class StaticValue {
     public static final String FRIENDLY_MSG_LENGTH = "friendly_msg_length";
@@ -56,5 +67,36 @@ public class StaticValue {
         }
         sb.append(" }");
         return sb.toString();
+    }
+
+    static public void setTextViewText(TextView view, String text) {
+        if (!Strings.isEmptyOrWhitespace(text))
+            view.setText(text);
+    }
+
+    static public void setViewVisibility(View view, int type) {
+        if (view != null) {
+            view.setVisibility(type);
+        }
+    }
+
+    static public String getTimeByFormat(Object time, String format) {
+        return new SimpleDateFormat(format).format(time);
+    }
+
+    static public void setImage(CircleImageView view, String uri, Activity activity) {
+        if (!Strings.isEmptyOrWhitespace(uri)) {
+            Glide.with(activity)
+                    .load(uri)
+                    .into(view);
+        } else
+            view.setImageDrawable(ContextCompat.getDrawable(activity, R.drawable.ic_account_circle_black_36dp));
+    }
+
+    static public boolean isNullorEmptyMap(Map<String, ?> map)
+    {
+        if(map == null) return true;
+        if(map.isEmpty()) return true;
+        return false;
     }
 }

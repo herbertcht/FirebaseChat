@@ -121,34 +121,34 @@ public class ChatFragment extends Fragment {
             protected void onBindViewHolder(final MessageViewHolder viewHolder,
                                             int position,
                                             FriendlyMessage friendlyMessage) {
-                globalData.setViewVisibility(mProgressBar, ProgressBar.INVISIBLE);
+                StaticValue.setViewVisibility(mProgressBar, ProgressBar.INVISIBLE);
 
                 long t = friendlyMessage.getTimestamp();
                 if (t > 0) {
-                    /*if (!globalData.getTimeByFormat(t, dateFormat)
+                    /*if (!StaticValue.getTimeByFormat(t, dateFormat)
                             .equals(lastT[0]) &&
-                            !globalData.getTimeByFormat(t, dateFormat)
-                                    .equals(globalData.getTimeByFormat(System.currentTimeMillis(), dateFormat))) {
-                        lastT[0] = globalData.getTimeByFormat(t, dateFormat);
-                        globalData.setTextViewText(viewHolder.messagerDateTextView, lastT[0]);
-                    } else if (globalData.getTimeByFormat(t, dateFormat)
-                            .equals(globalData.getTimeByFormat(System.currentTimeMillis(), dateFormat))
-                            && !globalData.getTimeByFormat(t, dateFormat)
+                            !StaticValue.getTimeByFormat(t, dateFormat)
+                                    .equals(StaticValue.getTimeByFormat(System.currentTimeMillis(), dateFormat))) {
+                        lastT[0] = StaticValue.getTimeByFormat(t, dateFormat);
+                        StaticValue.setTextViewText(viewHolder.messagerDateTextView, lastT[0]);
+                    } else if (StaticValue.getTimeByFormat(t, dateFormat)
+                            .equals(StaticValue.getTimeByFormat(System.currentTimeMillis(), dateFormat))
+                            && !StaticValue.getTimeByFormat(t, dateFormat)
                             .equals(lastT[0]) || lastT[0].equals("1")) {
-                        globalData.setTextViewText(viewHolder.messagerDateTextView, toDayStr);
-                        lastT[0] = globalData.getTimeByFormat(t, dateFormat);
+                        StaticValue.setTextViewText(viewHolder.messagerDateTextView, toDayStr);
+                        lastT[0] = StaticValue.getTimeByFormat(t, dateFormat);
                     }
                     else {*/
-                    globalData.setViewVisibility(viewHolder.messagerDateTextView, TextView.GONE);
+                    StaticValue.setViewVisibility(viewHolder.messagerDateTextView, TextView.GONE);
                     /*}
-                    lastT[0] = globalData.getTimeByFormat(t, dateFormat);*/
-                    globalData.setTextViewText(viewHolder.messengerTimestampView, globalData
+                    lastT[0] = StaticValue.getTimeByFormat(t, dateFormat);*/
+                    StaticValue.setTextViewText(viewHolder.messengerTimestampView, StaticValue
                             .getTimeByFormat(t, globalData.getTIMEFORMAT()));
                 }
                 if (!Strings.isEmptyOrWhitespace(friendlyMessage.getText())) {
-                    globalData.setTextViewText(viewHolder.messageTextView, friendlyMessage.getText());
-                    globalData.setViewVisibility(viewHolder.messageTextView, TextView.VISIBLE);
-                    globalData.setViewVisibility(viewHolder.messageImageView, ImageView.GONE);
+                    StaticValue.setTextViewText(viewHolder.messageTextView, friendlyMessage.getText());
+                    StaticValue.setViewVisibility(viewHolder.messageTextView, TextView.VISIBLE);
+                    StaticValue.setViewVisibility(viewHolder.messageImageView, ImageView.GONE);
                 } else {
                     String imageUrl = friendlyMessage.getImageUrl();
                     if (imageUrl.startsWith("gs://")) {
@@ -174,18 +174,18 @@ public class ChatFragment extends Fragment {
                                 .load(friendlyMessage.getImageUrl())
                                 .into(viewHolder.messageImageView);
                     }
-                    globalData.setViewVisibility(viewHolder.messageImageView, ImageView.VISIBLE);
-                    globalData.setViewVisibility(viewHolder.messageTextView, TextView.GONE);
+                    StaticValue.setViewVisibility(viewHolder.messageImageView, ImageView.VISIBLE);
+                    StaticValue.setViewVisibility(viewHolder.messageTextView, TextView.GONE);
                 }
 
-                globalData.setTextViewText(viewHolder.messengerTextView, friendlyMessage.getName());
-                globalData.setImage(viewHolder.messengerImageView, friendlyMessage.getPhotoUrl(), thisAct);
+                StaticValue.setTextViewText(viewHolder.messengerTextView, globalData.getmUser().getFriendsName(friendlyMessage.getSenderID(), friendlyMessage.getSenderName()));
+                StaticValue.setImage(viewHolder.messengerImageView, friendlyMessage.getPhotoUrl(), thisAct);
             }
         };
         mFirebaseAdapter.startListening();
 
         if (mFirebaseAdapter.getItemCount() == 0)
-            globalData.setViewVisibility(mProgressBar, ProgressBar.INVISIBLE);
+            StaticValue.setViewVisibility(mProgressBar, ProgressBar.INVISIBLE);
 
         mFirebaseAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override

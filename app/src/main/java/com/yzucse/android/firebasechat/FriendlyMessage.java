@@ -19,7 +19,8 @@ public class FriendlyMessage {
 
     private String id;
     private String text;
-    private String name;
+    private String senderID;
+    private String senderName;
     private String photoUrl;
     private String imageUrl;
     private long timestamp;
@@ -27,9 +28,9 @@ public class FriendlyMessage {
     public FriendlyMessage() {
     }
 
-    public FriendlyMessage(String text, String name, String photoUrl, String imageUrl) {
+    public FriendlyMessage(String text, String senderID, String photoUrl, String imageUrl) {
         this.text = text;
-        this.name = name;
+        this.senderID = senderID;
         this.photoUrl = photoUrl;
         this.imageUrl = imageUrl;
         this.timestamp = System.currentTimeMillis();
@@ -43,12 +44,20 @@ public class FriendlyMessage {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getSenderID() {
+        return senderID;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setSenderID(String senderID) {
+        this.senderID = senderID;
+    }
+
+    public String getSenderName() {
+        return senderName;
+    }
+
+    public void setSenderName(String senderName) {
+        this.senderName = senderName;
     }
 
     public String getPhotoUrl() {

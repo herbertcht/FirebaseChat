@@ -110,44 +110,11 @@ public class GlobalData implements Serializable {
         this.mUser.setBlockade(mUser.getBlockade());
     }
 
-    public boolean isNullorEmptyMap(Map<String, ?> map)
-    {
-        if(map == null) return true;
-        if(map.isEmpty()) return true;
-        return false;
-    }
-
     public String getTIMEFORMAT() {
         return TIMEFORMAT;
     }
 
     public void setTIMEFORMAT(String TIMEFORMAT) {
         this.TIMEFORMAT = TIMEFORMAT;
-    }
-
-    /************************* Utilities ******************************/
-
-    public void setTextViewText(TextView view, String text) {
-        if (!Strings.isEmptyOrWhitespace(text))
-            view.setText(text);
-    }
-
-    public void setViewVisibility(View view, int type) {
-        if (view != null) {
-            view.setVisibility(type);
-        }
-    }
-
-    public String getTimeByFormat(Object time, String format) {
-        return new SimpleDateFormat(format).format(time);
-    }
-
-    public void setImage(CircleImageView view, String uri, Activity activity) {
-        if (!Strings.isEmptyOrWhitespace(uri)) {
-            Glide.with(activity)
-                    .load(uri)
-                    .into(view);
-        } else
-            view.setImageDrawable(ContextCompat.getDrawable(activity, R.drawable.ic_account_circle_black_36dp));
     }
 }
