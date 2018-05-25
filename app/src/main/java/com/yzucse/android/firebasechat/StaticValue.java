@@ -96,7 +96,6 @@ public class StaticValue {
     static public boolean isNullorEmptyMap(Map<String, ?> map)
     {
         if(map == null) return true;
-        if(map.isEmpty()) return true;
-        return false;
+        return map.isEmpty();
     }
 }
