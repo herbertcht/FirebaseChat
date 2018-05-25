@@ -13,7 +13,6 @@
     <string name="sign_in_return">返回登入</string>
     <string name="fresh_config">Fresh Config</string>
     <string name="cause_crash">Cause Crash</string>
-    <string name="banner_ad_unit_id" translatable="false">ca-app-pub-3940256099942544/6300978111</string>
     <string name="account">帳號 (Email)</string>
     <string name="password">密碼</string>
     <string name="chkpassword">密碼確認</string>
@@ -25,7 +24,7 @@
     <string name="plz_input_chkpw_again">與你輸入的密碼不同</string>
     <string name="sign_up_here">在這裡註冊你的帳號</string>
     <string name="timeFormat">a h:mm</string>
-    <string name="closeMSG">再按一次返回鍵離開程式</string>
+    <string name="closeMSG">再按一次「返回」離開</string>
     <string name="chat">聊天</string>
     <string name="friend">朋友</string>
     <string name="setting">設定</string>
@@ -34,7 +33,9 @@
     <string name="noChat">你沒話聊</string>
     <string name="noFriend">你沒朋友</string>
     <string name="today">今天</string>
-    <string name="signup_success">註冊成功，現在可以用新帳號登入</string>
+    <string name="signup_success">註冊成功，現在可以使用新帳號登入</string>
     <string name="signin_failed">登入失敗，請檢查email/password</string>
     <string name="authentication_failed">認證失敗!</string>
+    <string name="about">關於</string>
+    <string name="exit">離開</string>
 </resources>

@@ -1,22 +1,9 @@
-/**
- * Copyright Google Inc. All Rights Reserved.
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.yzucse.android.firebasechat;
 
+import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
@@ -59,6 +46,8 @@ public class MainActivity extends AppCompatActivity
     private FriendsFragment mFriendsFragment;
     private SettingFragment mSettingFragment;
     private GoogleApiClient mGoogleApiClient;
+    private DatabaseReference usrdbr;
+    private ValueEventListener mValueEventListener;
     private boolean Main_status[] = new boolean[3];
     private boolean doubleBackToExitPressedOnce = false;
     private boolean isOffline = false;
@@ -89,6 +78,24 @@ public class MainActivity extends AppCompatActivity
         mProgressBar = findViewById(R.id.FragmentProgressBar);
         globalData = new GlobalData();
         globalData.setmFirebaseDatabaseReference(FirebaseDatabase.getInstance().getReference());
+        mValueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class); // it might be null, so can't just assign it
+                if (user != null && globalData != null) {
+                    globalData.setmUser(user);
+                    Log.e("globalData.mUser", globalData.getmUser().toString());
+                    globalData.setUserStatus(true);
+                    if (complete())
+                        mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
         init();
         initFragment();
     }
@@ -154,7 +161,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void init() {
-        if(isOffline) return;
+        if (isOffline) return;
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API)
@@ -171,26 +178,9 @@ public class MainActivity extends AppCompatActivity
             return;
         } else {
             if (globalData.getmUsersDBR() != null) {
-                final DatabaseReference usrdbr = globalData.getmUsersDBR().child(mFirebaseUser.getUid());
+                usrdbr = globalData.getmUsersDBR().child(mFirebaseUser.getUid());
                 if (usrdbr != null) {
-                    usrdbr.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            User user = dataSnapshot.getValue(User.class); // it might be null, so can't just assign it
-                            if (user != null && globalData != null) {
-                                globalData.setmUser(user);
-                                Log.e("globalData.mUser", globalData.getmUser().toString());
-                                globalData.setUserStatus(true);
-                                if (complete())
-                                    mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
+                    usrdbr.addValueEventListener(mValueEventListener);
                 }
 
                /* final DatabaseReference frienddbr = usrdbr.child(StaticValue.FRIEND);
@@ -259,7 +249,6 @@ public class MainActivity extends AppCompatActivity
         if (globalData != null)
             if (globalData.getmUser() != null) {
                 globalData.setUserStatus(true);
-                Log.e("RE", "on");
                 isOffline = false;
             }
         if (getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
@@ -274,8 +263,8 @@ public class MainActivity extends AppCompatActivity
         if (globalData != null)
             if (globalData.getmUser() != null) {
                 globalData.setUserStatus(false);
-                Log.e("DE", "off");
-                isOffline =true;
+                isOffline = true;
+                usrdbr.removeEventListener(mValueEventListener);
             }
     }
 
@@ -296,6 +285,16 @@ public class MainActivity extends AppCompatActivity
                 globalData = null;
                 startActivity(new Intent(this, SignInActivity.class));
                 finish();
+                return true;
+            case R.id.about_menu:
+                AlertDialog aboutDialog = new AlertDialog.Builder(MainActivity.this)
+                        .setTitle(R.string.about)
+                        .setMessage(R.string.about_message)
+                        .setPositiveButton(R.string.exit, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        }).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
