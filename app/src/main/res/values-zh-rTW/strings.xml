@@ -38,4 +38,8 @@
     <string name="authentication_failed">認證失敗!</string>
     <string name="about">關於</string>
     <string name="exit">離開</string>
+    <string name="send_image">傳送了圖片</string>
+    <string name="send_sticker">傳送了貼圖</string>
+    <string name="msg_err">文字讀取錯誤!</string>
+    <string name="you">你</string>
 </resources>

@@ -12,6 +12,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.InputFilter;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,9 +32,12 @@ import com.google.android.gms.common.util.Strings;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,6 +54,7 @@ public class ChatFragment extends Fragment {
     private ImageView mAddMessageImageView;
     private String toDayStr;
     private GlobalData globalData;
+    private String TAG = "ChatFragment";
 
     public ChatFragment() {
     }
@@ -164,7 +169,7 @@ public class ChatFragment extends Fragment {
                                                     .load(downloadUrl)
                                                     .into(viewHolder.messageImageView);
                                         } else {
-                                            Log.w(StaticValue.TAG, "Getting download url was not successful.",
+                                            Log.w(TAG, "Getting download url was not successful.",
                                                     task.getException());
                                         }
                                     }
@@ -179,7 +184,19 @@ public class ChatFragment extends Fragment {
                 }
 
                 StaticValue.setTextViewText(viewHolder.messengerTextView, globalData.getmUser().getFriendsName(friendlyMessage.getSenderID(), friendlyMessage.getSenderName()));
-                StaticValue.setImage(viewHolder.messengerImageView, friendlyMessage.getPhotoUrl(), thisAct);
+                globalData.getmUsersDBR().child(friendlyMessage.getSenderID())
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                User sender = dataSnapshot.getValue(User.class);
+                                StaticValue.setAccountImage(viewHolder.messengerImageView, sender.getPhotoUrl(), thisAct);
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
             }
         };
         mFirebaseAdapter.startListening();
@@ -211,23 +228,26 @@ public class ChatFragment extends Fragment {
         mMessageEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                setSenderBtn(charSequence);
             }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (charSequence.toString().trim().length() > 0) {
-                    mSendButton.setEnabled(true);
-                } else {
-                    mSendButton.setEnabled(false);
-                }
+                setSenderBtn(charSequence);
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
             }
+
+            private void setSenderBtn(CharSequence charSequence) {
+                if (TextUtils.isEmpty(charSequence)) mSendButton.setEnabled(false);
+                else mSendButton.setEnabled(!Strings.isEmptyOrWhitespace(charSequence.toString()));
+            }
         });
 
         final DatabaseReference chatroomref = globalData.getmChatRoomDBR().child(globalData.getmChatroom().getChatroomID());
+        mSendButton.setEnabled(false);
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -235,8 +255,8 @@ public class ChatFragment extends Fragment {
                 FriendlyMessage friendlyMessage = new
                         FriendlyMessage(MSG,
                         globalData.getmUser(),
-                        globalData.getmPhotoUrl(),
-                        null /* no image */);
+                        null /* no image */,
+                        null /* no sticker */);
                 String key = chatroomref.child(StaticValue.MESSAGES).push().getKey();
                 chatroomref.child(StaticValue.MESSAGES).child(key).setValue(friendlyMessage);
 
@@ -244,7 +264,7 @@ public class ChatFragment extends Fragment {
 
                 Map<String, Object> taskMap = new HashMap<>();
                 //taskMap.put("lastMsg", key); maybe later
-                taskMap.put("lastMsg", key);
+                taskMap.put(StaticValue.LASTMSG, key);
                 chatroomref.updateChildren(taskMap);
                 taskMap.clear();
             }
@@ -256,11 +276,6 @@ public class ChatFragment extends Fragment {
                 Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
                 intent.setType("image/*");
-
-                Map<String, Object> taskMap = new HashMap<>();
-                taskMap.put("lastMsg", globalData.getmUser().getUsername() + " Send Picture");
-                chatroomref.updateChildren(taskMap);
-                taskMap.clear();
                 startActivityForResult(intent, StaticValue.REQUEST_IMAGE);
             }
         });
@@ -305,5 +320,68 @@ public class ChatFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
+
+        if (requestCode == StaticValue.REQUEST_IMAGE) {
+            if (resultCode == Activity.RESULT_OK) {
+                if (data != null) {
+                    final Uri uri = data.getData();
+                    Log.d(TAG, "Uri: " + uri.toString());
+
+                    FriendlyMessage tempMessage = new FriendlyMessage(null, globalData.getmUser(), StaticValue.LOADING_IMAGE_URL,
+                            null);
+                    globalData.getmChatRoomDBR()
+                            .child(globalData.getmChatroom().getChatroomID()).child(StaticValue.MESSAGES).push()
+                            .setValue(tempMessage, new DatabaseReference.CompletionListener() {
+                                @Override
+                                public void onComplete(DatabaseError databaseError,
+                                                       DatabaseReference databaseReference) {
+                                    if (databaseError == null) {
+                                        String key = databaseReference.getKey();
+                                        StorageReference storageReference =
+                                                FirebaseStorage.getInstance()
+                                                        .getReference(globalData.getmUser().getUserID())
+                                                        .child(key)
+                                                        .child(uri.getLastPathSegment());
+
+                                        putImageInStorage(storageReference, uri, key);
+                                    } else {
+                                        Log.w(TAG, "Unable to write message to database.",
+                                                databaseError.toException());
+                                    }
+                                }
+                            });
+                }
+            }
+        }
+    }
+
+    private void putImageInStorage(StorageReference storageReference, Uri uri, final String key) {
+        storageReference.putFile(uri).addOnCompleteListener(getActivity(),
+                new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            FriendlyMessage friendlyMessage =
+                                    new FriendlyMessage(null, globalData.getmUser(),
+                                            task.getResult().getMetadata().getDownloadUrl()
+                                                    .toString(), null);
+                            globalData.getmChatRoomDBR().child(globalData.getmChatroom().getChatroomID())
+                                    .child(StaticValue.MESSAGES).child(key)
+                                    .setValue(friendlyMessage);
+
+                            globalData.getmChatRoomDBR().child(globalData.getmChatroom().getChatroomID()).child(StaticValue.LASTMSG).setValue(key);
+                            Log.e("Save Img", friendlyMessage.toString());
+                        } else {
+                            Log.w(TAG, "Image upload task was not successful.",
+                                    task.getException());
+                        }
+                    }
+                });
     }
 }

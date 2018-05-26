@@ -1,20 +1,9 @@
 package com.yzucse.android.firebasechat;
 
-import android.app.Activity;
-import android.support.v4.content.ContextCompat;
-import android.view.View;
-import android.widget.TextView;
-
-import com.bumptech.glide.Glide;
-import com.google.android.gms.common.util.Strings;
 import com.google.firebase.database.DatabaseReference;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
-import java.util.Map;
-
-import de.hdodenhof.circleimageview.CircleImageView;
 
 public class GlobalData implements Serializable {
     private String mPhotoUrl;
@@ -32,9 +21,9 @@ public class GlobalData implements Serializable {
     public GlobalData(GlobalData globalData) {
         setmUser(globalData.getmUser());
         setmFirebaseDatabaseReference(globalData.getmFirebaseDatabaseReference());
-        setmPhotoUrl(globalData.mPhotoUrl);
-        setmChatroom(globalData.mChatroom);
-        TIMEFORMAT = globalData.TIMEFORMAT;
+        setmPhotoUrl(globalData.getmPhotoUrl());
+        setmChatroom(globalData.getmChatroom());
+        TIMEFORMAT = globalData.getTIMEFORMAT();
     }
 
     public DatabaseReference getmChatRoomDBR() {

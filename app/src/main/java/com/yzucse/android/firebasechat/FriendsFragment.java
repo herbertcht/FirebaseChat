@@ -83,30 +83,31 @@ public class FriendsFragment extends Fragment {
         return view;
     }
 
-    final private void generateChat(final User friend) {
+    final private ChatRoom generateChat(final User friend) {
         ChatRoom friendChat = new ChatRoom();
-        friendChat.setChatroomID(globalData.getmUser().getUserID() + friend.getUserID());
+        String chatRoomID = globalData.getmUser().getUserID() + friend.getUserID();
+        friendChat.setChatroomID(chatRoomID);
         friendChat.setChatroomName(StaticValue.CHAT);
         Map<String, Boolean> savedata = new HashMap<>();
         savedata.put(globalData.getmUser().getUserID(), true);
         savedata.put(friend.getUserID(), true);
         friendChat.setUserID(savedata);
-        globalData.getmChatRoomDBR().child(globalData.getmUser().getUserID() +
-                friend.getUserID()).setValue(friendChat);
+        globalData.getmChatRoomDBR().child(chatRoomID).setValue(friendChat);
         globalData.setmChatroom(friendChat);
-        globalData.getmUser().addChatroom(friendChat.getChatroomID(), friend.getUsername());
-        friend.addChatroom(friendChat.getChatroomID(), globalData.getmUser().getUsername());
+        globalData.getmUser().addChatroom(friendChat.getChatroomID(), friend.getUserID());
+        friend.addChatroom(friendChat.getChatroomID(), globalData.getmUser().getUserID());
         Map<String, Object> updatecharoom = new HashMap<>();
         updatecharoom.put(StaticValue.CHATROOM, globalData.getmUser().getChatrooms());
         globalData.getmUsersDBR().child(globalData.getmUser().getUserID()).updateChildren(updatecharoom);
         updatecharoom.put(StaticValue.CHATROOM, friend.getChatrooms());
         globalData.getmUsersDBR().child(friend.getUserID()).updateChildren(updatecharoom);
+        return friendChat;
     }
 
     public void FriendsInit() {
         //getActivity().setContentView(R.layout.chat_list);
 
-        if(StaticValue.isNullorEmptyMap(globalData.getmUser().getFriends())){
+        if (StaticValue.isNullorEmptyMap(globalData.getmUser().getFriends())) {
             noitemText.setVisibility(View.VISIBLE);
             mProgressBar.setVisibility(ProgressBar.INVISIBLE);
         }
@@ -146,7 +147,7 @@ public class FriendsFragment extends Fragment {
                     noitemText.setVisibility(View.INVISIBLE);
                     StaticValue.setTextViewText(viewHolder.friendSignView, friend.getSign());
                     StaticValue.setTextViewText(viewHolder.friendStatusView, STATUS[friend.getOnline() ? 1 : 0]);
-                    StaticValue.setImage(viewHolder.friendImageView, friend.getPhotoUrl(), getActivity());
+                    StaticValue.setAccountImage(viewHolder.friendImageView, friend.getPhotoUrl(), getActivity());
                     //Log.e(key,muser.getFriends().get(key));
                     //if(fm.containsKey(friend.getUserID()))
                     StaticValue.setTextViewText(viewHolder.friendNameView,
@@ -166,7 +167,17 @@ public class FriendsFragment extends Fragment {
                                         key[0] = friend.getUserID() + globalData.getmUser().getUserID();
                                     }
                                     if (Strings.isEmptyOrWhitespace(key[0])) {
-                                        generateChat(friend);
+                                        globalData.setmChatroom(generateChat(friend));
+                                        mFirebaseAdapter.stopListening();
+                                        Activity thisAct = getActivity();
+                                        thisAct.findViewById(R.id.mainLayout).setVisibility(View.INVISIBLE);
+                                        thisAct.findViewById(R.id.chatlayout).setVisibility(View.VISIBLE);
+                                        ChatFragment mChatFragment = new ChatFragment();
+                                        mChatFragment.setGlobalData(globalData);
+                                        FragmentManager fragmentManager = getFragmentManager();
+                                        FragmentTransaction transaction = fragmentManager.beginTransaction();
+                                        transaction.replace(R.id.chatlayout, mChatFragment)
+                                                .commit();
                                     } else {
                                         fchatdbr.child(key[0]).addValueEventListener(new ValueEventListener() {
                                             @Override

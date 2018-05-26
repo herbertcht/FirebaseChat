@@ -81,7 +81,7 @@ public class ChatRoom implements Serializable {
 
     @Override
     public String toString() {
-        return chatroomID + " { "
+        return " { "
                 + "'chatroomID' : '" + chatroomID + "'" + ", " + "'chatroomName' : '" + chatroomName + "'"
                 + ", " + "'lastMsg' : '" + lastMsg + "'" + ", " + "'userID' : " + StaticValue.Map2String(userID)
                 + ", " + "'group' : '" + group + "'"

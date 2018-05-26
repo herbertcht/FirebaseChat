@@ -21,6 +21,7 @@ public class StaticValue {
     public static final String GROUP = "group";
     public static final String CHAT = "chat";
     public static final String FRIEND = "friends";
+    public static final String LASTMSG = "lastMsg";
     public static final String BLOCKADE = "blockade";
     public static final String STICKERS = "stickers";
     public static final String STATUS = "status";
@@ -32,7 +33,6 @@ public class StaticValue {
     public static final String Users = "Users";
     public static final int DEFAULT_MSG_LENGTH_LIMIT = 3000;
     public static final String ANONYMOUS = "anonymous";
-    public static final String TAG = "MainActivity";
     public static final int REQUEST_INVITE = 1;
     public static final int REQUEST_IMAGE = 2;
     public static final String LOADING_IMAGE_URL = "https://www.google.com/images/spin-32.gif";
@@ -84,7 +84,7 @@ public class StaticValue {
         return new SimpleDateFormat(format).format(time);
     }
 
-    static public void setImage(CircleImageView view, String uri, Activity activity) {
+    static public void setAccountImage(CircleImageView view, String uri, Activity activity) {
         if (!Strings.isEmptyOrWhitespace(uri)) {
             Glide.with(activity)
                     .load(uri)

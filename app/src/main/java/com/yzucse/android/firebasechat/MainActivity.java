@@ -6,7 +6,6 @@ import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -23,8 +22,6 @@ import android.widget.Toast;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -32,12 +29,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 public class MainActivity extends AppCompatActivity
         implements GoogleApiClient.OnConnectionFailedListener {
+    final private String TAG = "MainActivity";
     public FirebaseAuth mFirebaseAuth;
     public FirebaseUser mFirebaseUser;
     public ProgressBar mProgressBar;
@@ -116,7 +111,12 @@ public class MainActivity extends AppCompatActivity
 
     private void setStatus(int item) {
         for (int i = 0; i < Main_status.length; ++i) Main_status[i] = false;
-        if (item >= 0) Main_status[item] = true;
+        if (item >= 0) {
+            Main_status[item] = true;
+            mFriendsFragment = null;
+            mChatRoomFragment = null;
+            mSettingFragment = null;
+        }
     }
 
     private void changeToChatRoomFragment() {
@@ -125,13 +125,13 @@ public class MainActivity extends AppCompatActivity
         new Thread(new Runnable() {
             public void run() {
                 waitForUser();
+                setStatus(1);
                 mChatRoomFragment = new ChatRoomFragment();
                 mChatRoomFragment.setGlobalData(globalData);
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
                 transaction.replace(R.id.myFrameLayout, mChatRoomFragment)
                         .commit();
-                setStatus(1);
             }
         }).start();
         if (complete()) mProgressBar.setVisibility(ProgressBar.INVISIBLE);
@@ -143,13 +143,13 @@ public class MainActivity extends AppCompatActivity
         new Thread(new Runnable() {
             public void run() {
                 waitForUser();
+                setStatus(0);
                 mFriendsFragment = new FriendsFragment();
                 mFriendsFragment.setGlobalData(globalData);
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
                 transaction.replace(R.id.myFrameLayout, mFriendsFragment)
                         .commit();
-                setStatus(0);
             }
         }).start();
         if (complete()) mProgressBar.setVisibility(ProgressBar.INVISIBLE);
@@ -305,80 +305,20 @@ public class MainActivity extends AppCompatActivity
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         // An unresolvable error has occurred and Google APIs (including Sign-In) will not
         // be available.
-        Log.d(StaticValue.TAG, "onConnectionFailed:" + connectionResult);
+        Log.d(TAG, "onConnectionFailed:" + connectionResult);
         Toast.makeText(this, getString(R.string.Google_server_error), Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        Log.d(StaticValue.TAG, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
-
-        if (requestCode == StaticValue.REQUEST_IMAGE) {
-            if (resultCode == RESULT_OK) {
-                if (data != null) {
-                    final Uri uri = data.getData();
-                    Log.d(StaticValue.TAG, "Uri: " + uri.toString());
-
-                    FriendlyMessage tempMessage = new FriendlyMessage(null, globalData.getmUser(), globalData.getmPhotoUrl(),
-                            StaticValue.LOADING_IMAGE_URL);
-                    globalData.getmChatRoomDBR()
-                            .child(globalData.getmChatroom().getChatroomID()).child(StaticValue.MESSAGES).push()
-                            .setValue(tempMessage, new DatabaseReference.CompletionListener() {
-                                @Override
-                                public void onComplete(DatabaseError databaseError,
-                                                       DatabaseReference databaseReference) {
-                                    if (databaseError == null) {
-                                        String key = databaseReference.getKey();
-                                        StorageReference storageReference =
-                                                FirebaseStorage.getInstance()
-                                                        .getReference(mFirebaseUser.getUid())
-                                                        .child(key)
-                                                        .child(uri.getLastPathSegment());
-
-                                        putImageInStorage(storageReference, uri, key);
-                                    } else {
-                                        Log.w(StaticValue.TAG, "Unable to write message to database.",
-                                                databaseError.toException());
-                                    }
-                                }
-                            });
-                }
-            }
-        }
-    }
-
-    private void putImageInStorage(StorageReference storageReference, Uri uri, final String key) {
-        storageReference.putFile(uri).addOnCompleteListener(MainActivity.this,
-                new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            FriendlyMessage friendlyMessage =
-                                    new FriendlyMessage(null, globalData.getmUser(),
-                                            globalData.getmPhotoUrl(),
-                                            task.getResult().getMetadata().getDownloadUrl()
-                                                    .toString());
-                            globalData.getmChatRoomDBR().child(globalData.getmChatroom().getChatroomID())
-                                    .child(StaticValue.MESSAGES).child(key)
-                                    .setValue(friendlyMessage);
-                        } else {
-                            Log.w(StaticValue.TAG, "Image upload task was not successful.",
-                                    task.getException());
-                        }
-                    }
-                });
     }
 
     @Override
     public void onBackPressed() {
         // TODO Auto-generated method stub
-        if (findViewById(R.id.chatlayout) != null) {
+        if (mFriendsFragment != null || mChatRoomFragment != null || mSettingFragment != null) {
             if (findViewById(R.id.chatlayout).getVisibility() == View.VISIBLE) {
                 findViewById(R.id.mainLayout).setVisibility(View.VISIBLE);
                 findViewById(R.id.chatlayout).setVisibility(View.INVISIBLE);
                 setStatus(-1);
-                changeToChatRoomFragment();
+                if (mFriendsFragment != null) changeToFriendFragment();
+                else if(mChatRoomFragment != null) changeToChatRoomFragment();
                 return;
             }
         }

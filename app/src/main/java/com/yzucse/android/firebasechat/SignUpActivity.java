@@ -71,19 +71,19 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                 if (TextUtils.isEmpty(username)) {
                     usernameLayout.setError(getString(R.string.plz_input_username));
                     access = false;
-                }else usernameLayout.setError("");
+                } else usernameLayout.setError("");
                 if (TextUtils.isEmpty(account)) {
                     accoutLayout.setError(getString(R.string.plz_input_accout));
                     access = false;
-                }else accoutLayout.setError("");
+                } else accoutLayout.setError("");
                 if (TextUtils.isEmpty(password)) {
                     passwordLayout.setError(getString(R.string.plz_input_pw));
                     access = false;
-                }else passwordLayout.setError("");
+                } else passwordLayout.setError("");
                 if (TextUtils.isEmpty(chkpassword)) {
                     chkpasswordLayout.setError(getString(R.string.plz_input_chkpw));
                     access = false;
-                }else chkpasswordLayout.setError("");
+                } else chkpasswordLayout.setError("");
                 if (!access) return;
                 usernameLayout.setError("");
                 accoutLayout.setError("");

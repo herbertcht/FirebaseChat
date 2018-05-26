@@ -6,19 +6,19 @@ public class FriendlyMessage {
     private String text;
     private String senderID;
     private String senderName;
-    private String photoUrl;
     private String imageUrl;
+    private String stickerID;
     private long timestamp;
 
     public FriendlyMessage() {
     }
 
-    public FriendlyMessage(String text, User sender, String photoUrl, String imageUrl) {
+    public FriendlyMessage(String text, User sender, String imageUrl, String stickerID) {
         this.text = text;
         this.senderID = sender.getUserID();
         this.senderName = sender.getUsername();
-        this.photoUrl = photoUrl;
         this.imageUrl = imageUrl;
+        this.stickerID = stickerID;
         this.timestamp = System.currentTimeMillis();
     }
 
@@ -46,14 +46,6 @@ public class FriendlyMessage {
         this.senderName = senderName;
     }
 
-    public String getPhotoUrl() {
-        return photoUrl;
-    }
-
-    public void setPhotoUrl(String photoUrl) {
-        this.photoUrl = photoUrl;
-    }
-
     public String getText() {
         return text;
     }
@@ -76,5 +68,22 @@ public class FriendlyMessage {
 
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getStickerID() {
+        return stickerID;
+    }
+
+    public void setStickerID(String stickerID) {
+        this.stickerID = stickerID;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "'id' : '" + id + "'" + ", " + "'text' : '" + text + "'" + ", " + "'senderID' : '" + senderID + "'"
+                + ", " + "'senderName' : '" + senderName + "'" + ", " + "'imageUrl' : '" + imageUrl + "'"
+                + ", " + "'stickerID' : '" + stickerID + "'" + ", " + "'timestamp' : '" + timestamp + "'"
+                + "}";
     }
 }
