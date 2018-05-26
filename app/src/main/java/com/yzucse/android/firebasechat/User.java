@@ -141,6 +141,10 @@ public class User implements Serializable {
         return chatRoom.getChatroomName();
     }
 
+    public boolean hasFriend(String friendID){
+        return !Strings.isEmptyOrWhitespace(getFriendsName(friendID, ""));
+    }
+
     public String getFriendsName(String friendID, String defaultName) {
         if (!Strings.isEmptyOrWhitespace(friendID)) {
             if (!StaticValue.isNullorEmptyMap(friends)) {

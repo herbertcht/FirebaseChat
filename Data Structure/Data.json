@@ -6,6 +6,7 @@
 			"chatroomID" : string(chat room ID),
 			"chatroomName" : string(chat room name),
 			"lastMsg" : string(messages ID),
+			"photoUrl" : string(chat room Url),
 			"messages" :
 			{
 				string(message ID) :
@@ -13,13 +14,16 @@
 					"senderID" : string(sender ID),
 					"senderName" : string(sender name),
 					"text" : string(sender context),
-					"imageUrl" : string(URL)
+					"imageUrl" : string(URL),
+					"stickerID" : string(sticker ID),
+					"timestamp" : long()
 				}, ...
 			},
 			"userID" :
 			{
 				string(user ID) : bool(), ...
-			}
+			},
+			"group" : bool()
 		}, ...
 	},
 	"Users" : 
@@ -30,6 +34,7 @@
 			"online" : bool(),
 			"userID" : string(user ID),
 			"username" : string(user name),
+			"photoUrl" : string(user photo Url), 
 			"blockade" : 
 			{
 				string(friend id) : bool(), ...

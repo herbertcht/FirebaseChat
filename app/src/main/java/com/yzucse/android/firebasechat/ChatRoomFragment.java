@@ -193,8 +193,22 @@ public class ChatRoomFragment extends Fragment {
                     }
                 }
 
+                if (globalData.getmUser().hasFriend(chatroomName)) {
+                    globalData.getmUsersDBR().child(chatroomName)
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    User friend = dataSnapshot.getValue(User.class);
+                                    StaticValue.setAccountImage(viewHolder.chatroomImageView, friend.getPhotoUrl(), getActivity());
+                                }
 
-                StaticValue.setAccountImage(viewHolder.chatroomImageView, chatroom.getPhotoUrl(), getActivity());
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+                } else
+                    StaticValue.setAccountImage(viewHolder.chatroomImageView, chatroom.getPhotoUrl(), getActivity());
 
                 viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -215,7 +229,9 @@ public class ChatRoomFragment extends Fragment {
                 });
             }
 
-        };
+        }
+
+        ;
 
         /*mFirebaseAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override

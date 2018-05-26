@@ -40,8 +40,8 @@
     <string name="authentication_failed">Authentication failed!</string>
     <string name="Google_server_error">Google Play Services error.</string>
     <string name="about_message">Version: 1.0.0 \nAuthor: 資工三年級</string>
-    <string name="send_image">&#160;Send a Photo</string>
-    <string name="send_sticker">&#160;Send a Sticker</string>
+    <string name="send_image">&#160;Sent a Photo</string>
+    <string name="send_sticker">&#160;Sent a Sticker</string>
     <string name="msg_err">Something Error!</string>
     <string name="you">You</string>
 </resources>
