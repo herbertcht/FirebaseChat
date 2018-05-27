@@ -143,7 +143,7 @@ public class ChatRoomFragment extends Fragment {
                 Log.e("ChatRoom", chatroom.toString());
 
                 String chatroomName = globalData.getmUser().getChatroomName(chatroom);
-                StaticValue.setTextViewText(viewHolder.chatroomNameView, globalData.getmUser().getFriendsName(chatroomName, chatroomName));
+                StaticValue.setTextViewText(viewHolder.chatroomNameView, StaticValue.MaxLengthText(globalData.getmUser().getFriendsName(chatroomName, chatroomName)));
 
                 String lastMSG = chatroom.getLastMsg();
                 if (!Strings.isEmptyOrWhitespace(lastMSG)) {
@@ -152,11 +152,12 @@ public class ChatRoomFragment extends Fragment {
 
                     if (messagedbr != null) {
                         messagedbr.addValueEventListener(new ValueEventListener() {
+
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 final FriendlyMessage msg = dataSnapshot.getValue(FriendlyMessage.class); // it might be null, so can't just assign it
                                 if (msg != null) {
-                                    StaticValue.setTextViewText(viewHolder.chatroomTextView, msg.getText());
+                                    StaticValue.setTextViewText(viewHolder.chatroomTextView, StaticValue.MaxLengthText(msg.getText()));
                                     StaticValue.setTextViewText(viewHolder.chatroomTimestampView,
                                             StaticValue.getTimeByFormat(msg.getTimestamp(), globalData.getTIMEFORMAT()));
                                     if (Strings.isEmptyOrWhitespace(msg.getText())) {

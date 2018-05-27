@@ -60,6 +60,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:padding="5dp"
         android:orientation="horizontal"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin">
@@ -72,7 +73,10 @@
 
         <EditText
             android:id="@+id/messageEditText"
+            android:background="@drawable/rounded_edittext"
             android:layout_width="0dp"
+            android:padding="10dp"
+            android:paddingEnd="15dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="1" />
@@ -81,7 +85,8 @@
             android:id="@+id/sendButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
+            android:layout_gravity="center"
+            android:paddingStart="10dp"
             android:background="#FFFFFFFF"
             android:clickable="true"
             android:focusable="true"

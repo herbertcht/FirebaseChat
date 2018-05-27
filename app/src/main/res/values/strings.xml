@@ -24,6 +24,8 @@
     <string name="plz_input_chkpw">Please enter the password again to confirm</string>
     <string name="plz_input_chkpw_again">Different with your password</string>
     <string name="sign_up_here">Register your account here</string>
+    <string name="registering">Registering...</string>
+    <string name="logining_in">Loging in...</string>
     <string name="timeFormat">h:mm a</string>
     <string name="closeMSG">Please tap BACK again to exit</string>
     <string name="chat">Chat</string>

@@ -12,7 +12,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.InputFilter;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -92,6 +91,140 @@ public class ChatFragment extends Fragment {
         return view;
     }
 
+    private void setOtherMSG(FriendlyMessage friendlyMessage, final MessageViewHolder viewHolder, final Activity thisAct) {
+        StaticValue.setViewVisibility(viewHolder.userMSGLayout, View.GONE);
+        StaticValue.setViewVisibility(viewHolder.otherMSGLayout, View.VISIBLE);
+        long t = friendlyMessage.getTimestamp();
+        if (t > 0) {
+//                    if (!StaticValue.getTimeByFormat(t, dateFormat)
+//                            .equals(lastT[0]) &&
+//                            !StaticValue.getTimeByFormat(t, dateFormat)
+//                                    .equals(StaticValue.getTimeByFormat(System.currentTimeMillis(), dateFormat))) {
+//                        lastT[0] = StaticValue.getTimeByFormat(t, dateFormat);
+//                        StaticValue.setTextViewText(viewHolder.messagerDateTextView, lastT[0]);
+//                    } else if (StaticValue.getTimeByFormat(t, dateFormat)
+//                            .equals(StaticValue.getTimeByFormat(System.currentTimeMillis(), dateFormat))
+//                            && !StaticValue.getTimeByFormat(t, dateFormat)
+//                            .equals(lastT[0]) || lastT[0].equals("1")) {
+//                        StaticValue.setTextViewText(viewHolder.messagerDateTextView, toDayStr);
+//                        lastT[0] = StaticValue.getTimeByFormat(t, dateFormat);
+//                    }
+//                    else {
+            StaticValue.setViewVisibility(viewHolder.messagerDateTextView, TextView.GONE);
+//                    }
+//                    lastT[0] = StaticValue.getTimeByFormat(t, dateFormat);
+            StaticValue.setTextViewText(viewHolder.messengerTimestampView, StaticValue
+                    .getTimeByFormat(t, globalData.getTIMEFORMAT()));
+        }
+        if (!Strings.isEmptyOrWhitespace(friendlyMessage.getText())) {
+            StaticValue.setTextViewText(viewHolder.messageTextView, friendlyMessage.getText());
+            StaticValue.setViewVisibility(viewHolder.friendChatBubbleLayout, TextView.VISIBLE);
+            StaticValue.setViewVisibility(viewHolder.friendMSGImageCardView, ImageView.GONE);
+        } else {
+            String imageUrl = friendlyMessage.getImageUrl();
+            if (imageUrl.startsWith("gs://")) {
+                StorageReference storageReference = FirebaseStorage.getInstance()
+                        .getReferenceFromUrl(imageUrl);
+                storageReference.getDownloadUrl().addOnCompleteListener(
+                        new OnCompleteListener<Uri>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Uri> task) {
+                                if (task.isSuccessful()) {
+                                    String downloadUrl = task.getResult().toString();
+                                    Glide.with(viewHolder.messageImageView.getContext())
+                                            .load(downloadUrl)
+                                            .into(viewHolder.messageImageView);
+                                } else {
+                                    Log.w(TAG, "Getting download url was not successful.",
+                                            task.getException());
+                                }
+                            }
+                        });
+            } else {
+                Glide.with(viewHolder.messageImageView.getContext())
+                        .load(friendlyMessage.getImageUrl())
+                        .into(viewHolder.messageImageView);
+            }
+            StaticValue.setViewVisibility(viewHolder.friendMSGImageCardView, ImageView.VISIBLE);
+            StaticValue.setViewVisibility(viewHolder.friendChatBubbleLayout, TextView.GONE);
+        }
+
+        StaticValue.setTextViewText(viewHolder.messengerTextView, globalData.getmUser().getFriendsName(friendlyMessage.getSenderID(), friendlyMessage.getSenderName()));
+        globalData.getmUsersDBR().child(friendlyMessage.getSenderID())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        User sender = dataSnapshot.getValue(User.class);
+                        StaticValue.setAccountImage(viewHolder.messengerImageView, sender.getPhotoUrl(), thisAct);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
+    private void setUserMSG(FriendlyMessage friendlyMessage, final MessageViewHolder viewHolder) {
+        StaticValue.setViewVisibility(viewHolder.otherMSGLayout, View.GONE);
+        StaticValue.setViewVisibility(viewHolder.userMSGLayout, View.VISIBLE);
+        long t = friendlyMessage.getTimestamp();
+        if (t > 0) {
+//                    if (!StaticValue.getTimeByFormat(t, dateFormat)
+//                            .equals(lastT[0]) &&
+//                            !StaticValue.getTimeByFormat(t, dateFormat)
+//                                    .equals(StaticValue.getTimeByFormat(System.currentTimeMillis(), dateFormat))) {
+//                        lastT[0] = StaticValue.getTimeByFormat(t, dateFormat);
+//                        StaticValue.setTextViewText(viewHolder.messagerDateTextView, lastT[0]);
+//                    } else if (StaticValue.getTimeByFormat(t, dateFormat)
+//                            .equals(StaticValue.getTimeByFormat(System.currentTimeMillis(), dateFormat))
+//                            && !StaticValue.getTimeByFormat(t, dateFormat)
+//                            .equals(lastT[0]) || lastT[0].equals("1")) {
+//                        StaticValue.setTextViewText(viewHolder.messagerDateTextView, toDayStr);
+//                        lastT[0] = StaticValue.getTimeByFormat(t, dateFormat);
+//                    }
+//                    else {
+            StaticValue.setViewVisibility(viewHolder.messagerDateTextView, TextView.GONE);
+//                    }
+//                    lastT[0] = StaticValue.getTimeByFormat(t, dateFormat);
+            StaticValue.setTextViewText(viewHolder.userMessengerTimestampView, StaticValue
+                    .getTimeByFormat(t, globalData.getTIMEFORMAT()));
+        }
+        if (!Strings.isEmptyOrWhitespace(friendlyMessage.getText())) {
+            StaticValue.setTextViewText(viewHolder.userMessageTextView, friendlyMessage.getText());
+            Log.e("AAA", viewHolder.userMessageTextView.getText().toString());
+            StaticValue.setViewVisibility(viewHolder.userChatBubbleLayout, TextView.VISIBLE);
+            StaticValue.setViewVisibility(viewHolder.userMSGImageCardView, ImageView.GONE);
+        } else {
+            String imageUrl = friendlyMessage.getImageUrl();
+            if (imageUrl.startsWith("gs://")) {
+                StorageReference storageReference = FirebaseStorage.getInstance()
+                        .getReferenceFromUrl(imageUrl);
+                storageReference.getDownloadUrl().addOnCompleteListener(
+                        new OnCompleteListener<Uri>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Uri> task) {
+                                if (task.isSuccessful()) {
+                                    String downloadUrl = task.getResult().toString();
+                                    Glide.with(viewHolder.userMessageImageView.getContext())
+                                            .load(downloadUrl)
+                                            .into(viewHolder.userMessageImageView);
+                                } else {
+                                    Log.w(TAG, "Getting download url was not successful.",
+                                            task.getException());
+                                }
+                            }
+                        });
+            } else {
+                Glide.with(viewHolder.userMessageImageView.getContext())
+                        .load(friendlyMessage.getImageUrl())
+                        .into(viewHolder.userMessageImageView);
+            }
+            StaticValue.setViewVisibility(viewHolder.userMSGImageCardView, ImageView.VISIBLE);
+            StaticValue.setViewVisibility(viewHolder.userChatBubbleLayout, TextView.GONE);
+        }
+    }
+
     private void ChatInit() {
         final Activity thisAct = getActivity();
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(thisAct);
@@ -127,76 +260,9 @@ public class ChatFragment extends Fragment {
                                             int position,
                                             FriendlyMessage friendlyMessage) {
                 StaticValue.setViewVisibility(mProgressBar, ProgressBar.INVISIBLE);
-
-                long t = friendlyMessage.getTimestamp();
-                if (t > 0) {
-                    /*if (!StaticValue.getTimeByFormat(t, dateFormat)
-                            .equals(lastT[0]) &&
-                            !StaticValue.getTimeByFormat(t, dateFormat)
-                                    .equals(StaticValue.getTimeByFormat(System.currentTimeMillis(), dateFormat))) {
-                        lastT[0] = StaticValue.getTimeByFormat(t, dateFormat);
-                        StaticValue.setTextViewText(viewHolder.messagerDateTextView, lastT[0]);
-                    } else if (StaticValue.getTimeByFormat(t, dateFormat)
-                            .equals(StaticValue.getTimeByFormat(System.currentTimeMillis(), dateFormat))
-                            && !StaticValue.getTimeByFormat(t, dateFormat)
-                            .equals(lastT[0]) || lastT[0].equals("1")) {
-                        StaticValue.setTextViewText(viewHolder.messagerDateTextView, toDayStr);
-                        lastT[0] = StaticValue.getTimeByFormat(t, dateFormat);
-                    }
-                    else {*/
-                    StaticValue.setViewVisibility(viewHolder.messagerDateTextView, TextView.GONE);
-                    /*}
-                    lastT[0] = StaticValue.getTimeByFormat(t, dateFormat);*/
-                    StaticValue.setTextViewText(viewHolder.messengerTimestampView, StaticValue
-                            .getTimeByFormat(t, globalData.getTIMEFORMAT()));
-                }
-                if (!Strings.isEmptyOrWhitespace(friendlyMessage.getText())) {
-                    StaticValue.setTextViewText(viewHolder.messageTextView, friendlyMessage.getText());
-                    StaticValue.setViewVisibility(viewHolder.messageTextView, TextView.VISIBLE);
-                    StaticValue.setViewVisibility(viewHolder.messageImageView, ImageView.GONE);
-                } else {
-                    String imageUrl = friendlyMessage.getImageUrl();
-                    if (imageUrl.startsWith("gs://")) {
-                        StorageReference storageReference = FirebaseStorage.getInstance()
-                                .getReferenceFromUrl(imageUrl);
-                        storageReference.getDownloadUrl().addOnCompleteListener(
-                                new OnCompleteListener<Uri>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Uri> task) {
-                                        if (task.isSuccessful()) {
-                                            String downloadUrl = task.getResult().toString();
-                                            Glide.with(viewHolder.messageImageView.getContext())
-                                                    .load(downloadUrl)
-                                                    .into(viewHolder.messageImageView);
-                                        } else {
-                                            Log.w(TAG, "Getting download url was not successful.",
-                                                    task.getException());
-                                        }
-                                    }
-                                });
-                    } else {
-                        Glide.with(viewHolder.messageImageView.getContext())
-                                .load(friendlyMessage.getImageUrl())
-                                .into(viewHolder.messageImageView);
-                    }
-                    StaticValue.setViewVisibility(viewHolder.messageImageView, ImageView.VISIBLE);
-                    StaticValue.setViewVisibility(viewHolder.messageTextView, TextView.GONE);
-                }
-
-                StaticValue.setTextViewText(viewHolder.messengerTextView, globalData.getmUser().getFriendsName(friendlyMessage.getSenderID(), friendlyMessage.getSenderName()));
-                globalData.getmUsersDBR().child(friendlyMessage.getSenderID())
-                        .addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                User sender = dataSnapshot.getValue(User.class);
-                                StaticValue.setAccountImage(viewHolder.messengerImageView, sender.getPhotoUrl(), thisAct);
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-
-                            }
-                        });
+                if (globalData.getmUser().getUserID().equals(friendlyMessage.getSenderID()))
+                    setUserMSG(friendlyMessage, viewHolder);
+                else setOtherMSG(friendlyMessage, viewHolder, thisAct);
             }
         };
         mFirebaseAdapter.startListening();
@@ -228,21 +294,16 @@ public class ChatFragment extends Fragment {
         mMessageEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                setSenderBtn(charSequence);
+                mSendButton.setEnabled(!StaticValue.isNullorWhitespace(charSequence));
             }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                setSenderBtn(charSequence);
+                mSendButton.setEnabled(!StaticValue.isNullorWhitespace(charSequence));
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
-            }
-
-            private void setSenderBtn(CharSequence charSequence) {
-                if (TextUtils.isEmpty(charSequence)) mSendButton.setEnabled(false);
-                else mSendButton.setEnabled(!Strings.isEmptyOrWhitespace(charSequence.toString()));
             }
         });
 

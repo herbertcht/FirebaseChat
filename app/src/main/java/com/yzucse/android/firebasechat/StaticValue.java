@@ -2,6 +2,7 @@ package com.yzucse.android.firebasechat;
 
 import android.app.Activity;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
@@ -69,8 +70,19 @@ public class StaticValue {
         return sb.toString();
     }
 
+    static public String MaxLengthText(String string){
+        String returnMSG = null;
+        int maxLength = 50;
+        if(string !=null){
+            returnMSG = string.replaceAll("\n", " ");
+            if(string.length() >= maxLength)
+                returnMSG = returnMSG.substring(0, maxLength) + "...";
+        }
+        return returnMSG;
+    }
+
     static public void setTextViewText(TextView view, String text) {
-        if (!Strings.isEmptyOrWhitespace(text))
+        if (!Strings.isEmptyOrWhitespace(text) && view != null)
             view.setText(text);
     }
 
@@ -97,5 +109,10 @@ public class StaticValue {
     {
         if(map == null) return true;
         return map.isEmpty();
+    }
+
+    static boolean isNullorWhitespace(CharSequence charSequence){
+        if(TextUtils.isEmpty(charSequence)) return true;
+        return Strings.isEmptyOrWhitespace(charSequence.toString());
     }
 }

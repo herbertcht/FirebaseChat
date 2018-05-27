@@ -1,6 +1,7 @@
 package com.yzucse.android.firebasechat;
 
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
@@ -119,6 +120,13 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    private void chageFragment(Fragment fragment){
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.myFrameLayout, fragment)
+                .commit();
+    }
+
     private void changeToChatRoomFragment() {
         if (Main_status[1]) return;
         mProgressBar.setVisibility(ProgressBar.VISIBLE);
@@ -128,10 +136,7 @@ public class MainActivity extends AppCompatActivity
                 setStatus(1);
                 mChatRoomFragment = new ChatRoomFragment();
                 mChatRoomFragment.setGlobalData(globalData);
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction transaction = fragmentManager.beginTransaction();
-                transaction.replace(R.id.myFrameLayout, mChatRoomFragment)
-                        .commit();
+                chageFragment(mChatRoomFragment);
             }
         }).start();
         if (complete()) mProgressBar.setVisibility(ProgressBar.INVISIBLE);
@@ -146,10 +151,7 @@ public class MainActivity extends AppCompatActivity
                 setStatus(0);
                 mFriendsFragment = new FriendsFragment();
                 mFriendsFragment.setGlobalData(globalData);
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction transaction = fragmentManager.beginTransaction();
-                transaction.replace(R.id.myFrameLayout, mFriendsFragment)
-                        .commit();
+                chageFragment(mFriendsFragment);
             }
         }).start();
         if (complete()) mProgressBar.setVisibility(ProgressBar.INVISIBLE);

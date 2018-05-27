@@ -23,6 +23,8 @@
     <string name="plz_input_chkpw">請再次輸入密碼確認</string>
     <string name="plz_input_chkpw_again">與你輸入的密碼不同</string>
     <string name="sign_up_here">在這裡註冊你的帳號</string>
+    <string name="registering">註冊中...</string>
+    <string name="logining_in">登入中...</string>
     <string name="timeFormat">a h:mm</string>
     <string name="closeMSG">再按一次「返回」離開</string>
     <string name="chat">聊天</string>

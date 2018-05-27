@@ -9,13 +9,76 @@
         android:id="@+id/MsgdateText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
         android:layout_gravity="center"
-        android:background="@drawable/date_bg" />
+        android:layout_marginBottom="5dp"
+        android:background="@drawable/date_bg"
+        android:paddingEnd="10dp"
+        android:paddingStart="10dp" />
+
+    <RelativeLayout
+        android:id="@+id/userMSGLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:paddingEnd="10dp"
+        android:paddingStart="60dp">
+
+        <TextView
+            android:id="@+id/userMSGtimestamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_toStartOf="@id/userMSGTextLayout"
+            android:paddingEnd="10dp"
+            android:textAppearance="@android:style/TextAppearance.Holo.Small" />
+
+        <LinearLayout
+            android:id="@+id/userMSGTextLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/userMSGCardImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:elevation="10dp"
+                app:cardCornerRadius="8dp">
+
+                <ImageView
+                    android:id="@+id/userMSGImageView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:background="@color/colorPrimary"
+                    android:maxWidth="200sp"
+                    android:scaleType="fitCenter" />
+
+            </android.support.v7.widget.CardView>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/userChatBubbleLayout"
+                android:background="@drawable/in_message_bg">
+
+            <TextView
+                android:id="@+id/userMSGTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxWidth="200sp"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </RelativeLayout>
 
     <LinearLayout
+        android:id="@+id/otherMSGLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="10dp"
@@ -50,35 +113,37 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
+                    <android.support.v7.widget.CardView
+                        android:id="@+id/friendMSGCardImageView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:elevation="10dp"
+                        app:cardCornerRadius="8dp">
+
+                        <ImageView
+                            android:id="@+id/messageImageView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:adjustViewBounds="true"
+                            android:background="@color/colorPrimary"
+                            android:maxWidth="200sp"
+                            android:scaleType="fitCenter" />
+
+                    </android.support.v7.widget.CardView>
+
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <android.support.v7.widget.CardView
-                            app:cardCornerRadius="8dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="5dp"
-                            android:elevation="10dp">
-
-                            <ImageView
-                                android:id="@+id/messageImageView"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:adjustViewBounds="true"
-                                android:background="@color/colorPrimary"
-                                android:maxWidth="200sp"
-                                android:scaleType="fitCenter" />
-                        </android.support.v7.widget.CardView>
+                        android:orientation="vertical"
+                        android:id="@+id/friendChatBubbleLayout"
+                        android:background="@drawable/out_message_bg">
 
                         <TextView
                             android:id="@+id/messageTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/border"
                             android:maxWidth="200sp"
-                            android:padding="8dp"
                             android:textAppearance="?android:attr/textAppearanceLarge" />
 
                     </LinearLayout>

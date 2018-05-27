@@ -1,14 +1,17 @@
 package com.yzucse.android.firebasechat;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -31,6 +34,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     private TextInputLayout accoutLayout;
     private TextInputLayout passwordLayout;
     private TextInputLayout chkpasswordLayout;
+    private Dialog d;
 
     private FirebaseAuth mFirebaseAuth;
 
@@ -55,6 +59,13 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         passwordLayout.setErrorEnabled(true);
         accoutLayout.setErrorEnabled(true);
 
+        final LayoutInflater factory = getLayoutInflater();
+        View prompt = factory.inflate(R.layout.logging_layout, null);
+        LinearLayout layout = prompt.findViewById(R.id.logging);
+        StaticValue.setTextViewText((TextView) layout.findViewById(R.id.loggingText), getString(R.string.logining_in));
+        d = new Dialog(this);
+        d.setContentView(layout);
+
         mSignUpButton.setOnClickListener(this);
         mReturnButton.setOnClickListener(this);
     }
@@ -68,19 +79,19 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                 String password = passwordEdit.getText().toString();
                 String chkpassword = chkpasswordEdit.getText().toString();
                 boolean access = true;
-                if (TextUtils.isEmpty(username)) {
+                if (StaticValue.isNullorWhitespace(username)) {
                     usernameLayout.setError(getString(R.string.plz_input_username));
                     access = false;
                 } else usernameLayout.setError("");
-                if (TextUtils.isEmpty(account)) {
+                if (StaticValue.isNullorWhitespace(account)) {
                     accoutLayout.setError(getString(R.string.plz_input_accout));
                     access = false;
                 } else accoutLayout.setError("");
-                if (TextUtils.isEmpty(password)) {
+                if (StaticValue.isNullorWhitespace(password)) {
                     passwordLayout.setError(getString(R.string.plz_input_pw));
                     access = false;
                 } else passwordLayout.setError("");
-                if (TextUtils.isEmpty(chkpassword)) {
+                if (StaticValue.isNullorWhitespace(chkpassword)) {
                     chkpasswordLayout.setError(getString(R.string.plz_input_chkpw));
                     access = false;
                 } else chkpasswordLayout.setError("");
@@ -93,16 +104,21 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                     return;
                 }
                 chkpasswordLayout.setError("");
+                d.show();
                 signup();
                 break;
             case R.id.signup_button_return:
-                startActivity(new Intent(SignUpActivity.this, SignInActivity.class));
-                finish();
+                backToSignIn();
                 break;
             default:
                 break;
 
         }
+    }
+
+    private void backToSignIn(){
+        startActivity(new Intent(SignUpActivity.this, SignInActivity.class));
+        finish();
     }
 
     private void signup() {
@@ -131,11 +147,18 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                             FirebaseDatabase.getInstance().getReference().child(StaticValue.Users).child(uid).setValue(saveUser);
                             startActivity(new Intent(SignUpActivity.this, SignInActivity.class));
                             mFirebaseAuth.signOut();
+                            d.dismiss();
                             finish();
                         } else {
                             Toast.makeText(SignUpActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
+    }
+
+    @Override
+    public void onBackPressed() {
+        backToSignIn();
+        super.onBackPressed();
     }
 }

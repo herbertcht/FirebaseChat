@@ -1,15 +1,18 @@
 package com.yzucse.android.firebasechat;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -46,6 +49,7 @@ public class SignInActivity extends AppCompatActivity implements
     private EditText passwordEdit;
     private TextInputLayout accoutLayout;
     private TextInputLayout passwordLayout;
+    private Dialog d;
 
     private GoogleApiClient mGoogleApiClient;
 
@@ -67,6 +71,13 @@ public class SignInActivity extends AppCompatActivity implements
         passwordLayout = findViewById(R.id.password_layout);
         passwordLayout.setErrorEnabled(true);
         accoutLayout.setErrorEnabled(true);
+
+        final LayoutInflater factory = getLayoutInflater();
+        View prompt = factory.inflate(R.layout.logging_layout, null);
+        LinearLayout layout = prompt.findViewById(R.id.logging);
+        StaticValue.setTextViewText((TextView) layout.findViewById(R.id.loggingText), getString(R.string.logining_in));
+        d = new Dialog(this);
+        d.setContentView(layout);
 
         // Set click listeners
         mSignInButtonG.setOnClickListener(this);
@@ -92,12 +103,12 @@ public class SignInActivity extends AppCompatActivity implements
             case R.id.signin_button:
                 String account = accountEdit.getText().toString();
                 String password = passwordEdit.getText().toString();
-                if (TextUtils.isEmpty(account)) {
+                if (StaticValue.isNullorWhitespace(account)) {
                     accoutLayout.setError(getString(R.string.plz_input_accout));
                     passwordLayout.setError("");
                     return;
                 }
-                if (TextUtils.isEmpty(password)) {
+                if (StaticValue.isNullorWhitespace(password)) {
                     accoutLayout.setError("");
                     passwordLayout.setError(getString(R.string.plz_input_pw));
                     return;
@@ -147,11 +158,13 @@ public class SignInActivity extends AppCompatActivity implements
     }
 
     private void login() {
+        d.show();
         mFirebaseAuth.signInWithEmailAndPassword(accountEdit.getText().toString(), passwordEdit.getText().toString())
                 .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                     @Override
                     public void onSuccess(AuthResult authResult) {
                         setResult(RESULT_OK);
+                        d.dismiss();
                         writeToDB();
                         startActivity(new Intent(SignInActivity.this, MainActivity.class));
                         finish();
@@ -162,12 +175,14 @@ public class SignInActivity extends AppCompatActivity implements
                     public void onFailure(@NonNull Exception e) {
                         Toast.makeText(SignInActivity.this, getString(R.string.signin_failed),
                                 Toast.LENGTH_SHORT).show();
+                        d.dismiss();
                         mSignInButton.setError(getString(R.string.signin_failed));
                     }
                 });
     }
 
     private void loginG() {
+        d.show();
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
@@ -188,6 +203,7 @@ public class SignInActivity extends AppCompatActivity implements
                 Log.e(TAG, "Google Sign-In failed.");
             }
         }
+        d.dismiss();
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
@@ -206,8 +222,10 @@ public class SignInActivity extends AppCompatActivity implements
                             Log.w(TAG, "signInWithCredential", task.getException());
                             Toast.makeText(SignInActivity.this, getString(R.string.authentication_failed),
                                     Toast.LENGTH_SHORT).show();
+                            d.dismiss();
                         } else {
                             writeToDB();
+                            d.dismiss();
                             startActivity(new Intent(SignInActivity.this, MainActivity.class));
                             finish();
                         }
