@@ -18,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -30,6 +31,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity
         implements GoogleApiClient.OnConnectionFailedListener {
@@ -82,8 +85,10 @@ public class MainActivity extends AppCompatActivity
                     globalData.setmUser(user);
                     Log.e("globalData.mUser", globalData.getmUser().toString());
                     globalData.setUserStatus(true);
-                    if (complete())
+                    if (complete()) {
                         mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+                        setUser();
+                    }
                 }
             }
 
@@ -120,7 +125,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void chageFragment(Fragment fragment){
+    private void chageFragment(Fragment fragment) {
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.myFrameLayout, fragment)
@@ -129,6 +134,7 @@ public class MainActivity extends AppCompatActivity
 
     private void changeToChatRoomFragment() {
         if (Main_status[1]) return;
+        StaticValue.setViewVisibility(findViewById(R.id.userLayout), View.GONE);
         mProgressBar.setVisibility(ProgressBar.VISIBLE);
         new Thread(new Runnable() {
             public void run() {
@@ -142,8 +148,16 @@ public class MainActivity extends AppCompatActivity
         if (complete()) mProgressBar.setVisibility(ProgressBar.INVISIBLE);
     }
 
+    private void setUser(){
+        StaticValue.setViewVisibility(findViewById(R.id.userLayout), View.VISIBLE);
+        StaticValue.setAccountImage((CircleImageView) findViewById(R.id.userImageView), globalData.getmUser().getPhotoUrl(), this);
+        StaticValue.setTextViewText((TextView) findViewById(R.id.userNameView), StaticValue.MaxLengthText(globalData.getmUser().getUsername()));
+        StaticValue.setTextViewText((TextView) findViewById(R.id.userSignView), StaticValue.MaxLengthText(globalData.getmUser().getSign()));
+    }
+
     private void changeToFriendFragment() {
         if (Main_status[0]) return;
+        StaticValue.setViewVisibility(findViewById(R.id.userLayout), View.INVISIBLE);
         mProgressBar.setVisibility(ProgressBar.VISIBLE);
         new Thread(new Runnable() {
             public void run() {
@@ -154,7 +168,10 @@ public class MainActivity extends AppCompatActivity
                 chageFragment(mFriendsFragment);
             }
         }).start();
-        if (complete()) mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+        if (complete()) {
+            setUser();
+            mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+        }
     }
 
     private void initFragment() {
@@ -226,7 +243,10 @@ public class MainActivity extends AppCompatActivity
                 }*/
 
             }
-            if (complete()) mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+            if (complete()) {
+                mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+                setUser();
+            }
 
             if (mFirebaseUser.getPhotoUrl() != null) {
                 globalData.setmPhotoUrl(mFirebaseUser.getPhotoUrl().toString());
@@ -320,7 +340,7 @@ public class MainActivity extends AppCompatActivity
                 findViewById(R.id.chatlayout).setVisibility(View.INVISIBLE);
                 setStatus(-1);
                 if (mFriendsFragment != null) changeToFriendFragment();
-                else if(mChatRoomFragment != null) changeToChatRoomFragment();
+                else if (mChatRoomFragment != null) changeToChatRoomFragment();
                 return;
             }
         }
