@@ -1,12 +1,13 @@
 package com.yzucse.android.firebasechat;
 
+import com.google.android.gms.common.util.Strings;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ChatRoom implements Serializable {
     private Map<String, Boolean> userID;
-    private Boolean group;
     private String chatroomName;
     private String chatroomID;
     private String photoUrl;
@@ -16,12 +17,10 @@ public class ChatRoom implements Serializable {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
-    public ChatRoom(Map<String, Boolean> userID, String chatroomName, String photoUrl) {
+    public ChatRoom(Map<String, Boolean> userID, String chatroomID, String chatroomName) {
         setUserID(userID);
+        this.chatroomID = chatroomID;
         this.chatroomName = chatroomName;
-        this.photoUrl = photoUrl;
-
-        // under this line will generate roomID
     }
 
     public String getChatroomID() {
@@ -67,12 +66,15 @@ public class ChatRoom implements Serializable {
         }
     }
 
-    public Boolean getGroup() {
-        return group;
+    public boolean hasMember(String id) {
+        if (StaticValue.isNullorEmptyMap(userID)) return false;
+        return userID.containsKey(id);
     }
 
-    public void setGroup(Boolean group) {
-        this.group = group;
+    public void eraseMember(String id) {
+        if (Strings.isEmptyOrWhitespace(id) || StaticValue.isNullorEmptyMap(this.userID)) return;
+        if (this.userID.containsKey(id))
+            this.userID.remove(id);
     }
 
     public void addMember(String memberID) {
@@ -84,7 +86,7 @@ public class ChatRoom implements Serializable {
         return " { "
                 + "'chatroomID' : '" + chatroomID + "'" + ", " + "'chatroomName' : '" + chatroomName + "'"
                 + ", " + "'lastMsg' : '" + lastMsg + "'" + ", " + "'userID' : " + StaticValue.Map2String(userID)
-                + ", " + "'group' : '" + group + "'"
+                + ", "
                 + " }";
     }
 }

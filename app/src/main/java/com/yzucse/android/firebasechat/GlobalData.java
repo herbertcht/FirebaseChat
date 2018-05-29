@@ -13,6 +13,7 @@ public class GlobalData implements Serializable {
     private DatabaseReference mFirebaseDatabaseReference;
     private DatabaseReference mUsersDBR;
     private DatabaseReference mChatRoomDBR;
+    private DatabaseReference mGroupDBR;
     private String TIMEFORMAT;
 
     public GlobalData() {
@@ -49,12 +50,29 @@ public class GlobalData implements Serializable {
         }});
     }
 
+    public DatabaseReference getmGroupDBR() {
+        return mGroupDBR;
+    }
+
+    public void setmGroupDBR(DatabaseReference mGroupDBR) {
+        this.mGroupDBR = mGroupDBR;
+    }
+
     public String getmPhotoUrl() {
         return mPhotoUrl;
     }
 
     public void setmPhotoUrl(String mPhotoUrl) {
         this.mPhotoUrl = mPhotoUrl;
+    }
+
+    public boolean AllFriendsInChatRoom() {
+        if (StaticValue.isNullorEmptyMap(this.mUser.getFriends()) || StaticValue.isNullorEmptyMap(this.mChatroom.getUserID()))
+            return true;
+        for (String friendId : this.mUser.getFriends().keySet())
+            if (!this.mChatroom.getUserID().containsKey(friendId))
+                return false;
+        return true;
     }
 
     public ChatRoom getmChatroom() {
@@ -79,6 +97,7 @@ public class GlobalData implements Serializable {
         this.mFirebaseDatabaseReference = mFirebaseDatabaseReference;
         this.mUsersDBR = mFirebaseDatabaseReference.child(StaticValue.Users);
         this.mChatRoomDBR = mFirebaseDatabaseReference.child(StaticValue.MESSAGES_CHILD);
+        this.mGroupDBR = mFirebaseDatabaseReference.child(StaticValue.GROUP);
     }
 
     public User getmUser() {
@@ -97,6 +116,7 @@ public class GlobalData implements Serializable {
         this.mUser.setFriends(mUser.getFriends());
         this.mUser.setChatrooms(mUser.getChatrooms());
         this.mUser.setBlockade(mUser.getBlockade());
+        this.mUser.setGroups(mUser.getGroups());
     }
 
     public String getTIMEFORMAT() {

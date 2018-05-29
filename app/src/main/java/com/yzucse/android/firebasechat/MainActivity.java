@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        findViewById(R.id.chatlayout).setVisibility(View.INVISIBLE);
+        findViewById(R.id.fragmentlayout).setVisibility(View.INVISIBLE);
 
         ((BottomNavigationView) findViewById(R.id.navigation)).setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         mProgressBar = findViewById(R.id.FragmentProgressBar);
@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity
         if (complete()) mProgressBar.setVisibility(ProgressBar.INVISIBLE);
     }
 
-    private void setUser(){
+    private void setUser() {
         StaticValue.setViewVisibility(findViewById(R.id.userLayout), View.VISIBLE);
         StaticValue.setAccountImage((CircleImageView) findViewById(R.id.userImageView), globalData.getmUser().getPhotoUrl(), this);
         StaticValue.setTextViewText((TextView) findViewById(R.id.userNameView), StaticValue.MaxLengthText(globalData.getmUser().getUsername()));
@@ -334,10 +334,15 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         // TODO Auto-generated method stub
+        if (getFragmentManager().getBackStackEntryCount() != 0) {
+            getFragmentManager().popBackStack();
+            getFragmentManager().beginTransaction().commit();
+            return;
+        }
         if (mFriendsFragment != null || mChatRoomFragment != null || mSettingFragment != null) {
-            if (findViewById(R.id.chatlayout).getVisibility() == View.VISIBLE) {
+            if (findViewById(R.id.fragmentlayout).getVisibility() == View.VISIBLE) {
                 findViewById(R.id.mainLayout).setVisibility(View.VISIBLE);
-                findViewById(R.id.chatlayout).setVisibility(View.INVISIBLE);
+                findViewById(R.id.fragmentlayout).setVisibility(View.INVISIBLE);
                 setStatus(-1);
                 if (mFriendsFragment != null) changeToFriendFragment();
                 else if (mChatRoomFragment != null) changeToChatRoomFragment();
@@ -364,6 +369,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void addGroup(View view) {
-
+        findViewById(R.id.mainLayout).setVisibility(View.INVISIBLE);
+        findViewById(R.id.fragmentlayout).setVisibility(View.VISIBLE);
+        AddGroupFragment mAddGroupFragment = new AddGroupFragment();
+        mAddGroupFragment.setGlobalData(globalData);
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.fragmentlayout, mAddGroupFragment)
+                .commit();
     }
 }

@@ -9,26 +9,55 @@
         android:id="@+id/noItem"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
         android:text="@string/noFriend"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
 
     <LinearLayout
+        android:layout_above="@id/addBtnLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
         <LinearLayout
-            android:id="@+id/items"
+            android:id="@+id/friendsLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal" />
+            android:orientation="vertical">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/friendsRecyclerView"
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="15dp"
+                android:background="@color/holo_gray_light" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/friendsRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:dividerHeight="4dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/groupsLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:dividerHeight="4dp" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="15dp"
+                android:background="@color/holo_gray_light" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/groupsRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:dividerHeight="4dp" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
     <ProgressBar
@@ -40,6 +69,7 @@
         android:layout_centerVertical="true" />
 
     <RelativeLayout
+        android:id="@+id/addBtnLayout"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_alignParentBottom="true"

@@ -15,15 +15,25 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="40dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="10dp"
         android:text="@string/sign_up_here"
         android:textSize="30sp" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/userImageView"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_margin="10dp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/sign_up_here_text"
+            android:src="@drawable/ic_account_circle_black_36dp" />
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/signup_username_layout"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/sign_up_here_text"
+        android:layout_below="@id/userImageView"
         android:layout_centerHorizontal="true">
 
         <EditText
@@ -87,7 +97,6 @@
             android:textSize="15sp" />
     </android.support.design.widget.TextInputLayout>
 
-
     <Button
         android:id="@+id/signup_button_send"
         android:layout_width="200dp"
@@ -96,6 +105,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
         android:text="@string/sign_up" />
+
     <Button
         android:id="@+id/signup_button_return"
         android:layout_width="120dp"
@@ -104,6 +114,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
         android:text="@string/sign_in_return" />
+
 
     </RelativeLayout>
 

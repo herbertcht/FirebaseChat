@@ -218,12 +218,12 @@ public class ChatRoomFragment extends Fragment {
                         mFirebaseAdapter.stopListening();
                         Activity thisAct = getActivity();
                         thisAct.findViewById(R.id.mainLayout).setVisibility(View.INVISIBLE);
-                        thisAct.findViewById(R.id.chatlayout).setVisibility(View.VISIBLE);
+                        thisAct.findViewById(R.id.fragmentlayout).setVisibility(View.VISIBLE);
                         ChatFragment mChatFragment = new ChatFragment();
                         mChatFragment.setGlobalData(globalData);
                         FragmentManager fragmentManager = getFragmentManager();
                         FragmentTransaction transaction = fragmentManager.beginTransaction();
-                        transaction.replace(R.id.chatlayout, mChatFragment)
+                        transaction.replace(R.id.fragmentlayout, mChatFragment)
                                 .commit();
                         return;
                     }

@@ -22,8 +22,7 @@
 			"userID" :
 			{
 				string(user ID) : bool(), ...
-			},
-			"group" : bool()
+			}
 		}, ...
 	},
 	"Users" : 
@@ -31,6 +30,7 @@
 		string(user ID) :
 		{
 			"email" : string(user email),
+			"sign" : string(user sign),
 			"online" : bool(),
 			"userID" : string(user ID),
 			"username" : string(user name),
@@ -50,9 +50,22 @@
 			"stickers" :
 			{
 				string(sticker id) : bool(), ...
+			},
+			"groups" :
+			{
+				string(group id) : bool(), ...
 			}
 		}
-	}
+	},
+	"Group":
+	{
+		"chatroomID" : string(chat room ID),
+		"chatroomName" : string(chat room name),
+		"userID" :
+		{
+			string(user ID) : bool(), ...
+		}
+	},
 	"Stickers" :
 	{
 		string(sticker id) : 

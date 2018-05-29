@@ -78,6 +78,7 @@ public class SignInActivity extends AppCompatActivity implements
         StaticValue.setTextViewText((TextView) layout.findViewById(R.id.loggingText), getString(R.string.logining_in));
         d = new Dialog(this);
         d.setContentView(layout);
+        d.setCanceledOnTouchOutside(false);
 
         // Set click listeners
         mSignInButtonG.setOnClickListener(this);

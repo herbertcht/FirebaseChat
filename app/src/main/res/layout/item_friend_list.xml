@@ -7,7 +7,11 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingBottom="5dp"
+        android:paddingTop="5dp"
+        android:paddingStart="5dp"
+        android:paddingEnd="5dp">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/friendImageView"
@@ -31,12 +35,14 @@
                     android:id="@+id/friendNameView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:singleLine="true"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <TextView
                     android:id="@+id/friendStatusView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:singleLine="true"
                     android:textAlignment="textEnd" />
 
             </LinearLayout>
@@ -45,7 +51,7 @@
                 android:id="@+id/friendSignView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAlignment="textEnd"
+                android:maxLines="2"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
         </LinearLayout>

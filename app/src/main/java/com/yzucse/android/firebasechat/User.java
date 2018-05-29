@@ -3,7 +3,9 @@ package com.yzucse.android.firebasechat;
 import com.google.android.gms.common.util.Strings;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class User implements Serializable {
@@ -12,6 +14,7 @@ public class User implements Serializable {
     private Map<String, Boolean> stickers; // this structure might be changed
     private Map<String, String> friends;
     private Map<String, Boolean> blockade;
+    private Map<String, Boolean> groups;
     private Map<String, String> chatrooms;
     private String sign;
     private Boolean online;
@@ -85,6 +88,41 @@ public class User implements Serializable {
         }
     }
 
+    public void addSticker(String id) {
+        if (Strings.isEmptyOrWhitespace(id)) return;
+        if (this.stickers == null) this.stickers = new HashMap<>();
+        this.stickers.put(id, true);
+    }
+
+    public void eraseSticker(String id) {
+        if (Strings.isEmptyOrWhitespace(id) || StaticValue.isNullorEmptyMap(this.stickers)) return;
+        if (this.stickers.containsKey(id))
+            this.stickers.remove(id);
+    }
+
+    public Map<String, Boolean> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(Map<String, Boolean> groups) {
+        if (!StaticValue.isNullorEmptyMap(groups)) {
+            this.groups = new HashMap<>();
+            this.groups.putAll(groups);
+        }
+    }
+
+    public void addGroup(String id) {
+        if (Strings.isEmptyOrWhitespace(id)) return;
+        if (this.groups == null) this.groups = new HashMap<>();
+        this.groups.put(id, true);
+    }
+
+    public void eraseGroup(String id) {
+        if (Strings.isEmptyOrWhitespace(id) || StaticValue.isNullorEmptyMap(this.groups)) return;
+        if (this.groups.containsKey(id))
+            this.groups.remove(id);
+    }
+
     public Map<String, String> getFriends() {
         return friends;
     }
@@ -103,6 +141,12 @@ public class User implements Serializable {
         addBlockade(id);
     }
 
+    public void eraseFriend(String id) {
+        if (Strings.isEmptyOrWhitespace(id) || StaticValue.isNullorEmptyMap(this.friends)) return;
+        if (this.friends.containsKey(id))
+            this.friends.remove(id);
+    }
+
     public Map<String, Boolean> getBlockade() {
         return blockade;
     }
@@ -114,10 +158,22 @@ public class User implements Serializable {
         }
     }
 
+    public void setFriendBlockade(String id) {
+        if (Strings.isEmptyOrWhitespace(id) || StaticValue.isNullorEmptyMap(this.blockade)) return;
+        if (this.blockade.containsKey(id))
+            this.blockade.put(id, true);
+    }
+
     public void addBlockade(String id) {
         if (Strings.isEmptyOrWhitespace(id)) return;
         if (this.blockade == null) this.blockade = new HashMap<>();
         this.blockade.put(id, false);
+    }
+
+    public void cancelBlockade(String id) {
+        if (Strings.isEmptyOrWhitespace(id) || StaticValue.isNullorEmptyMap(this.blockade)) return;
+        if (this.blockade.containsKey(id))
+            this.blockade.put(id, false);
     }
 
     public Map<String, String> getChatrooms() {
@@ -141,8 +197,20 @@ public class User implements Serializable {
         return chatRoom.getChatroomName();
     }
 
-    public boolean hasFriend(String friendID){
+    public boolean hasFriend(String friendID) {
         return !Strings.isEmptyOrWhitespace(getFriendsName(friendID, ""));
+    }
+
+    public List<String> getFriendsId(String friendName) {
+        List<String> ids = new ArrayList<>();
+        if (!Strings.isEmptyOrWhitespace(friendName)) {
+            if (!StaticValue.isNullorEmptyMap(friends)) {
+                if (friends.containsValue(friendName)) {
+                    ids = new ArrayList<>(StaticValue.getKeysByValue(friends, friendName));
+                }
+            }
+        }
+        return ids;
     }
 
     public String getFriendsName(String friendID, String defaultName) {
@@ -152,6 +220,14 @@ public class User implements Serializable {
             }
         }
         return defaultName;
+    }
+
+    public List<String> getAllFriendsNames() {
+        List<String> names = new ArrayList<>();
+        if (!StaticValue.isNullorEmptyMap(friends)) {
+            names.addAll(friends.values());
+        }
+        return names;
     }
 
     public void addChatroom(String id, String name) {
@@ -175,7 +251,7 @@ public class User implements Serializable {
                 + ", " + "'id' : '" + userID + "'" + ", " + "'chatrooms' : " + StaticValue.Map2String(chatrooms)
                 + ", " + "'friends' : " + StaticValue.Map2String(friends) + ", " + "'blockade' : " + StaticValue.Map2String(blockade)
                 + ", " + "'stickers' : " + StaticValue.Map2String(stickers) + ", " + "'sign' : '" + sign + "'" + ", " + "'photoUrl' : '" + photoUrl + "' "
-                + ", " + "'email' : '" + email + "'"
+                + ", " + "'email' : '" + email + "'" + "," + "'groups' : " + StaticValue.Map2String(groups)
                 + " }";
     }
 

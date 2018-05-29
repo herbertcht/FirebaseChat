@@ -5,6 +5,7 @@
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/itemLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -16,6 +17,7 @@
             android:id="@+id/friendImageView"
             android:layout_width="36dp"
             android:layout_height="36dp"
+            android:layout_gravity="center"
             android:src="@drawable/ic_account_circle_black_36dp" />
 
         <LinearLayout
@@ -32,33 +34,25 @@
                 android:gravity="center_vertical"
                 android:orientation="vertical">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
                     <TextView
                         android:id="@+id/friendNameView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceLarge" />
 
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/friendSignView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceSmall" />
-
             </LinearLayout>
 
-            <CheckBox
-                android:id="@+id/friendCheckBoxView"
+            <Button
+                android:id="@+id/friendKickOutView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="@android:color/holo_red_dark"
+                android:layout_margin="10dp"
                 android:layout_weight=".05"
                 android:gravity="center_vertical"
+                android:textAlignment="center"
+                android:textColor="@android:color/white"
+                android:text="@string/kick_out"
                 android:layoutDirection="rtl" />
 
         </LinearLayout>

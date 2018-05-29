@@ -44,4 +44,19 @@
     <string name="send_sticker">傳送了貼圖</string>
     <string name="msg_err">文字讀取錯誤!</string>
     <string name="you">你</string>
+    <string name="group_search_hint">輸入好友姓名來搜尋</string>
+    <string name="create_group">建立群組</string>
+    <string name="no_found">找不到結果!</string>
+    <string name="group_name">請輸入群組名稱</string>
+    <string name="kick_out">踢出群組</string>
+    <string name="kick_msg">你確定要將 %s 踢出群組?</string>
+    <string name="yes">確定</string>
+    <string name="cancel">取消</string>
+    <string name="edit">確定修改</string>
+    <string name="add_to_group">加入群組</string>
+    <string name="search_friend">搜尋</string>
+    <string name="search_friend_hint">輸入好友的Email</string>
+    <string name="add_friend">加入好友</string>
+    <string name="already_friends">你們已經是朋友了!</string>
+    <string name="yourself">這是你自己!</string>
 </resources>

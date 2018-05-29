@@ -192,7 +192,6 @@ public class ChatFragment extends Fragment {
         }
         if (!Strings.isEmptyOrWhitespace(friendlyMessage.getText())) {
             StaticValue.setTextViewText(viewHolder.userMessageTextView, friendlyMessage.getText());
-            Log.e("AAA", viewHolder.userMessageTextView.getText().toString());
             StaticValue.setViewVisibility(viewHolder.userChatBubbleLayout, TextView.VISIBLE);
             StaticValue.setViewVisibility(viewHolder.userMSGImageCardView, ImageView.GONE);
         } else {

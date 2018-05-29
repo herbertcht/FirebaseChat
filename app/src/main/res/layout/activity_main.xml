@@ -7,7 +7,7 @@
     tools:context="com.yzucse.android.firebasechat.MainActivity">
 
     <FrameLayout
-        android:id="@+id/chatlayout"
+        android:id="@+id/fragmentlayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
@@ -43,14 +43,15 @@
                 android:orientation="vertical">
 
                 <LinearLayout
+                    android:padding="5dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
                     <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/userImageView"
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
                         android:src="@drawable/ic_account_circle_black_36dp" />
 
                     <LinearLayout
@@ -70,17 +71,11 @@
                             android:id="@+id/userSignView"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textAlignment="textEnd"
                             android:textAppearance="?android:attr/textAppearanceSmall" />
 
                     </LinearLayout>
 
                 </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="15dp"
-                    android:background="@color/holo_gray_light" />
 
             </LinearLayout>
 

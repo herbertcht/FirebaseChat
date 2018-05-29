@@ -46,4 +46,19 @@
     <string name="send_sticker">&#160;Sent a Sticker</string>
     <string name="msg_err">Something Error!</string>
     <string name="you">You</string>
+    <string name="group_search_hint">Input friend\'s name to search</string>
+    <string name="create_group">Create Group</string>
+    <string name="no_found">No Found!</string>
+    <string name="group_name">Input group\'s name</string>
+    <string name="kick_out">Kick out</string>
+    <string name="kick_msg">Are you sure kick %s out?</string>
+    <string name="yes">Yes</string>
+    <string name="cancel">Cancel</string>
+    <string name="edit">Edit</string>
+    <string name="add_to_group">Add to group</string>
+    <string name="search_friend">Search</string>
+    <string name="search_friend_hint">Input friend\'s Email</string>
+    <string name="add_friend">Add Friend</string>
+    <string name="already_friends">You are already friends!</string>
+    <string name="yourself">It\'s yourself!</string>
 </resources>
