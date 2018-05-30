@@ -102,11 +102,11 @@ public class EditGroupFragment extends Fragment {
         mGroupImageView = view.findViewById(R.id.roomImageView);
         mGroupName = view.findViewById(R.id.roomNameView);
         mGroupLayout = view.findViewById(R.id.groupLayout);
-        clearButton = layout.findViewById(R.id.clearAll);
 
         factory = getActivity().getLayoutInflater();
         prompt = factory.inflate(R.layout.new_group_dialog_layout, null);
         layout = prompt.findViewById(R.id.add_group_layout);
+        clearButton = layout.findViewById(R.id.clearAll);
         roomNameView[0] = layout.findViewById(R.id.roomNameView);
         roomImageView[0] = layout.findViewById(R.id.roomImageView);
         editButton[0] = layout.findViewById(R.id.create_btn);

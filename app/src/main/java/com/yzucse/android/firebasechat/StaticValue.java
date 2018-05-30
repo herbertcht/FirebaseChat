@@ -108,6 +108,7 @@ public class StaticValue {
     }
 
     static public void setAccountImage(CircleImageView view, String uri, Activity activity) {
+        if(view == null) return;
         if (!Strings.isEmptyOrWhitespace(uri)) {
             Glide.with(activity)
                     .load(uri)
