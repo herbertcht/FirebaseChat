@@ -59,4 +59,5 @@
     <string name="add_friend">加入好友</string>
     <string name="already_friends">你們已經是朋友了!</string>
     <string name="yourself">這是你自己!</string>
+    <string name="lonely_group">群組除了你之外沒人了!</string>
 </resources>

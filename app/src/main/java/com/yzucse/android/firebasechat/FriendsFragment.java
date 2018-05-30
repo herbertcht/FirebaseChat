@@ -266,7 +266,7 @@ public class FriendsFragment extends Fragment {
                             globalData.setmChatroom(group);
                             EditGroupFragment mEditGroupFragment = new EditGroupFragment();
                             mEditGroupFragment.setGlobalData(globalData);
-                            changeFragment(mEditGroupFragment);
+                            changeFragment(mEditGroupFragment, StaticValue.EDITGROUPFRAGMENT);
                         }
                     });
                 }
@@ -305,7 +305,7 @@ public class FriendsFragment extends Fragment {
                 Log.e(TAG, "CLICK");
                 AddFriendFragment mAddFriendFragment = new AddFriendFragment();
                 mAddFriendFragment.setGlobalData(globalData);
-                changeFragment(mAddFriendFragment);
+                changeFragment(mAddFriendFragment, null);
             }
         });
 
@@ -329,7 +329,7 @@ public class FriendsFragment extends Fragment {
         }
     }
 
-    private void changeFragment(Fragment fragment) {
+    private void changeFragment(Fragment fragment, String Tag) {
         if (mFriendsAdapter != null) mFriendsAdapter.stopListening();
         if (mGroupsAdapter != null) mGroupsAdapter.stopListening();
         Activity thisAct = getActivity();
@@ -337,7 +337,10 @@ public class FriendsFragment extends Fragment {
         StaticValue.setViewVisibility(thisAct.findViewById(R.id.fragmentlayout), View.VISIBLE);
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.fragmentlayout, fragment)
+        if (Strings.isEmptyOrWhitespace(Tag))
+            transaction.replace(R.id.fragmentlayout, fragment)
+                    .commit();
+        else transaction.replace(R.id.fragmentlayout, fragment, Tag)
                 .commit();
     }
 
@@ -349,7 +352,7 @@ public class FriendsFragment extends Fragment {
         globalData.setmChatroom(chat);
         ChatFragment mChatFragment = new ChatFragment();
         mChatFragment.setGlobalData(globalData);
-        changeFragment(mChatFragment);
+        changeFragment(mChatFragment, null);
     }
 
 }

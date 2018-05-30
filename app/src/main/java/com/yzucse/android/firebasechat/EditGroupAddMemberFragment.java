@@ -187,12 +187,9 @@ public class EditGroupAddMemberFragment extends Fragment {
     }
 
     private void transToEdit() {
-        EditGroupFragment mEditGroupFragment = new EditGroupFragment();
-        mEditGroupFragment.setGlobalData(globalData);
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.fragmentlayout, mEditGroupFragment)
-                .commit();
+        ((EditGroupFragment)getFragmentManager().findFragmentByTag(StaticValue.EDITGROUPFRAGMENT)).setGlobalData(globalData);
+        getFragmentManager().popBackStack();
+        getFragmentManager().beginTransaction().commit();
     }
 
     public class FriendsAdapter extends ArrayAdapter<IdAndName> {

@@ -61,4 +61,5 @@
     <string name="add_friend">Add Friend</string>
     <string name="already_friends">You are already friends!</string>
     <string name="yourself">It\'s yourself!</string>
+    <string name="lonely_group">This group has no member except of you!</string>
 </resources>

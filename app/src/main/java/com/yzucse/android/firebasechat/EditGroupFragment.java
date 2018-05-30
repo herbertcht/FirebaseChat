@@ -52,6 +52,7 @@ public class EditGroupFragment extends Fragment {
     private RecyclerView mMembersRecyclerView;
     private CircleImageView mGroupImageView;
     private TextView mGroupName;
+    private TextView mNoItemText;
     private CircleImageView mAddMemberBtn;
     private LinearLayout mGroupLayout;
     private ProgressBar mProgressBar;
@@ -102,6 +103,8 @@ public class EditGroupFragment extends Fragment {
         mGroupImageView = view.findViewById(R.id.roomImageView);
         mGroupName = view.findViewById(R.id.roomNameView);
         mGroupLayout = view.findViewById(R.id.groupLayout);
+        mNoItemText = view.findViewById(R.id.noItem);
+        StaticValue.setViewVisibility(mNoItemText, TextView.GONE);
 
         factory = getActivity().getLayoutInflater();
         prompt = factory.inflate(R.layout.new_group_dialog_layout, null);
@@ -119,6 +122,8 @@ public class EditGroupFragment extends Fragment {
     }
 
     private void InitMembersRecyclerView() {
+        LonelyGroup();
+        Log.e(TAG, globalData.getmChatroom().getUserID().toString());
         // New child entries
         SnapshotParser<User> parser = new SnapshotParser<User>() {
             @Override
@@ -246,6 +251,7 @@ public class EditGroupFragment extends Fragment {
                                         globalData.getmChatroom().eraseMember(friend.getUserID());
                                         globalData.getmUsersDBR().child(friend.getUserID()).child(StaticValue.CHATROOM).child(globalData.getmChatroom().getChatroomID()).removeValue();
                                         globalData.getmUsersDBR().child(friend.getUserID()).child(StaticValue.GROUPS).child(globalData.getmChatroom().getChatroomID()).removeValue();
+                                        LonelyGroup();
                                     }
                                 })
                                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -284,6 +290,18 @@ public class EditGroupFragment extends Fragment {
                 transToChat();
             }
         });
+    }
+
+    private void LonelyGroup(){
+        if(globalData != null)
+        if(globalData.getmChatroom() != null){
+            if(!StaticValue.isNullorEmptyMap(globalData.getmChatroom().getUserID())) {
+                if(globalData.getmChatroom().getUserID().size() == 1) {
+                    StaticValue.setViewVisibility(mProgressBar, ProgressBar.INVISIBLE);
+                    StaticValue.setViewVisibility(mNoItemText, TextView.VISIBLE);
+                }
+            }
+        }
     }
 
     @Override

@@ -30,6 +30,7 @@ public class StaticValue {
     public static final String STICKERS = "stickers";
     public static final String STATUS = "status";
     public static final String SIGN = "sign";
+    public static final String EDITGROUPFRAGMENT = "EditGroupFragment";
     public static final String CHATROOM = "chatrooms";
     public static final String CHATROOMID = "chatroomID";
     public static final String PHOTO = "photoUrl";

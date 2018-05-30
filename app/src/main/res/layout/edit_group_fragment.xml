@@ -45,6 +45,14 @@
                 android:layout_height="15dp"
                 android:background="@color/holo_gray_light" />
 
+            <TextView
+                android:id="@+id/noItem"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/lonely_group"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/membersRecyclerView"
                 android:layout_width="match_parent"
