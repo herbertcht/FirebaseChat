@@ -62,4 +62,12 @@
     <string name="already_friends">You are already friends!</string>
     <string name="yourself">It\'s yourself!</string>
     <string name="lonely_group">This group has no member except of you!</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="can">can message</string>
+    <string name="picture">picture</string>
+    <string name="canhint">input your can message</string>
+    <string name="open_can">open</string>
+    <string name="can_close" >close</string>
 </resources>

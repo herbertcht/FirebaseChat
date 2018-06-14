@@ -37,8 +37,8 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_margin="10dp"
-            android:visibility="gone"
-            android:background="@drawable/ic_clear_black_24dp" />
+            android:background="@drawable/ic_clear_black_24dp"
+            android:visibility="gone" />
 
     </RelativeLayout>
 

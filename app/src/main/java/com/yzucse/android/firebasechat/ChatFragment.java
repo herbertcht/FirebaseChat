@@ -33,6 +33,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -319,7 +320,6 @@ public class ChatFragment extends Fragment {
                         null /* no sticker */);
                 String key = chatroomref.child(StaticValue.MESSAGES).push().getKey();
                 chatroomref.child(StaticValue.MESSAGES).child(key).setValue(friendlyMessage);
-
                 mMessageEditText.setText("");
 
                 Map<String, Object> taskMap = new HashMap<>();
@@ -327,6 +327,9 @@ public class ChatFragment extends Fragment {
                 taskMap.put(StaticValue.LASTMSG, key);
                 chatroomref.updateChildren(taskMap);
                 taskMap.clear();
+                //check the Can message
+                if(globalData.getmChatroom().getChatroomName().equals("chat"))
+                    checkcan();
             }
         });
 
@@ -342,6 +345,40 @@ public class ChatFragment extends Fragment {
 
         mLinearLayoutManager.setStackFromEnd(true);
         mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
+    }
+
+    public void checkcan(){
+        String chatroomid=globalData.getmChatroom().getChatroomID();
+        String friendname=globalData.getmUser().chatroomfindfriend(chatroomid);
+        DatabaseReference ref= FirebaseDatabase.getInstance().getReference();
+        ref.child("Users").child(friendname)//get user infomation
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        User user= dataSnapshot.getValue(User.class);
+                        if(user.getCanMessage()!=null){
+                            if(user.isOpenCan())
+                            {
+                                final DatabaseReference chatroomref = globalData.getmChatRoomDBR().child(globalData.getmChatroom().getChatroomID());
+                                FriendlyMessage friendlyMessage = new
+                                        FriendlyMessage(user.getCanMessage(),
+                                        user,
+                                        null /* no image */,
+                                        null /* no sticker */);
+                                String key = chatroomref.child(StaticValue.MESSAGES).push().getKey();
+                                chatroomref.child(StaticValue.MESSAGES).child(key).setValue(friendlyMessage);
+                                Map<String, Object> taskMap = new HashMap<>();
+                                //taskMap.put("lastMsg", key); maybe later
+                                taskMap.put(StaticValue.LASTMSG, key);
+                                chatroomref.updateChildren(taskMap);
+                                taskMap.clear();
+                            }
+                        }
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+                });
     }
 
     @Override

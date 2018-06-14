@@ -60,4 +60,9 @@
     <string name="already_friends">你們已經是朋友了!</string>
     <string name="yourself">這是你自己!</string>
     <string name="lonely_group">群組除了你之外沒人了!</string>
+    <string name="picture">貼圖</string>
+    <string name="can">罐頭訊息</string>
+    <string name="canhint">輸入罐頭訊息</string>
+    <string name="open_can">開啟</string>
+    <string name="can_close">關閉</string>
 </resources>

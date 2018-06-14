@@ -117,6 +117,8 @@ public class GlobalData implements Serializable {
         this.mUser.setChatrooms(mUser.getChatrooms());
         this.mUser.setBlockade(mUser.getBlockade());
         this.mUser.setGroups(mUser.getGroups());
+        this.mUser.setCanMessage(mUser.getCanMessage());
+        this.mUser.setOpenCan(mUser.isOpenCan());
     }
 
     public String getTIMEFORMAT() {

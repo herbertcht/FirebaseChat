@@ -18,6 +18,8 @@ import java.util.Map;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class StaticValue {
+    public static final String CAN_MESSAGE="canMessage";
+    public static final String OPEN_CAN="openCan";
     public static final String FRIENDLY_MSG_LENGTH = "friendly_msg_length";
     public static final String MESSAGES_CHILD = "Messages";
     public static final String MESSAGES = "messages";
