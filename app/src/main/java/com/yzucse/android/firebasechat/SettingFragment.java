@@ -47,7 +47,7 @@ public class SettingFragment extends Fragment {
                              Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_setting, container, false);
         button_setcan = view.findViewById(R.id.bt_setting_can);
-        mProgressBar = view.findViewById(R.id.progressBar);
+        mProgressBar = view.findViewById(R.id.setting_progressBar);
         mProgressBar.setVisibility(View.GONE);
         button_setcan.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,10 +55,11 @@ public class SettingFragment extends Fragment {
                 setCanMessage = new SetCanMessage();
                 setCanMessage.setGlobalData(globalData);
                 StaticValue.setViewVisibility(getActivity().findViewById(R.id.mainLayout),View.INVISIBLE);
-                StaticValue.setViewVisibility(getActivity().findViewById(R.id.fragmentlayout), View.VISIBLE);
+             //   StaticValue.setViewVisibility(getActivity().findViewById(R.id.fragmentlayout), View.VISIBLE);
                 changefragment(setCanMessage);
             }
         });
+
         return view;
     }
 

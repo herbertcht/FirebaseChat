@@ -51,6 +51,7 @@ public class SetCanMessage extends Fragment {
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         editText_can=view.findViewById(R.id.et_canmessage);
         toggleButton=view.findViewById(R.id.tb_canmessage);
+        StaticValue.setViewVisibility(getActivity().findViewById(R.id.fragmentlayout), View.VISIBLE);
         editText_can.setFilters(new InputFilter[]{new InputFilter.LengthFilter(mSharedPreferences
                 .getInt(StaticValue.FRIENDLY_MSG_LENGTH, StaticValue.DEFAULT_MSG_LENGTH_LIMIT))});
         CheckCan();

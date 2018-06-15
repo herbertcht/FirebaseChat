@@ -80,6 +80,7 @@ public class ChatFragment extends Fragment {
         View view = inflater.inflate(R.layout.activity_chat, container, false);
 
         // Initialize View
+        StaticValue.setViewVisibility(getActivity().findViewById(R.id.fragmentlayout), View.VISIBLE);
         mProgressBar = view.findViewById(R.id.progressBar);
         mMessageRecyclerView = view.findViewById(R.id.messageRecyclerView);
         mMessageEditText = view.findViewById(R.id.messageEditText);
