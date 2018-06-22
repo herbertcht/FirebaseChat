@@ -46,7 +46,8 @@ public class StaticValue {
     public static final String LOADING_IMAGE_URL = "https://www.google.com/images/spin-32.gif";
     public static final String MESSAGE_SENT_EVENT = "message_sent";
     public static final String MESSAGE_URL = "http://friendlychat.firebase.google.com/message/";
-
+    public static final String FCM_API_URL = "https://fcm.googleapis.com/fcm/send";
+    public static final String FCM_API_KEY = "AAAAMzQ4iTc:APA91bGlOPmQ4GOMlO3IzhFOJe-lC8d4ZUaPO41OZdl_CaPxEvkejNvO4DoYjPtt2zy2CC43qKoKPIZ4c6OyaangLBScOVcLDPLzdN3iusBmhHMZOhRqO5u7MErouybL8WWHJGYGZOTl";
 
     /****************************** Static Utilities **********************************/
     public static String list2String(final List<String> item) {
@@ -109,7 +110,7 @@ public class StaticValue {
     }
 
     static public void setAccountImage(CircleImageView view, String uri, Activity activity) {
-        if(view == null) return;
+        if (view == null) return;
         if (!Strings.isEmptyOrWhitespace(uri)) {
             Glide.with(activity)
                     .load(uri)

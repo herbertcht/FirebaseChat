@@ -38,6 +38,15 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -311,7 +320,7 @@ public class ChatFragment extends Fragment {
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String MSG = mMessageEditText.getText().toString();
+                final String MSG = mMessageEditText.getText().toString();
                 FriendlyMessage friendlyMessage = new
                         FriendlyMessage(MSG,
                         globalData.getmUser(),
@@ -327,6 +336,12 @@ public class ChatFragment extends Fragment {
                 taskMap.put(StaticValue.LASTMSG, key);
                 chatroomref.updateChildren(taskMap);
                 taskMap.clear();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.e("FCM-debug", sendNotificationToOther(globalData.getmUser().getUsername(), MSG));
+                    }
+                }).start();
             }
         });
 
@@ -410,6 +425,13 @@ public class ChatFragment extends Fragment {
                                                         .child(uri.getLastPathSegment());
 
                                         putImageInStorage(storageReference, uri, key);
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                String fromUser = globalData.getmUser().getUsername();
+                                                Log.e("FCM-debug", sendNotificationToOther(fromUser, fromUser + getResources().getString(R.string.someone_send_picture)));
+                                            }
+                                        }).start();
                                     } else {
                                         Log.w(TAG, "Unable to write message to database.",
                                                 databaseError.toException());
@@ -443,5 +465,76 @@ public class ChatFragment extends Fragment {
                         }
                     }
                 });
+    }
+
+    private String sendNotificationToOther(String sender, String messageContent) {
+        Log.e("FCM-debug", "sendNotificationToOther() called");
+        HttpURLConnection conn = null;
+        StringBuilder response = new StringBuilder();
+
+        final ArrayList<String> snedList = new ArrayList<String>(globalData.getmChatroom().getUserID().keySet());
+        for (int i = 0; i < snedList.size(); i++) {
+            if (snedList.get(i).equals(globalData.getmUser().getUserID())) {
+                Log.e("FCM-debug", "Remove myself " + snedList.get(i));
+                snedList.remove(i);
+            }
+        }
+        StringBuilder multiTopic = new StringBuilder();
+        multiTopic.append("'").append(snedList.get(0)).append("' in topics");
+        for (int i = 1; i < snedList.size(); i++) {
+            multiTopic.append(" || '").append(snedList.get(i)).append("' in topics");
+        }
+        Log.e("FCM-debug", multiTopic.toString());
+        try {
+            URL url = new URL(StaticValue.FCM_API_URL);
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setRequestProperty("Authorization", "key=" + StaticValue.FCM_API_KEY);
+            conn.setRequestMethod("POST");
+            conn.setConnectTimeout(10000);
+            conn.setReadTimeout(10000);
+            conn.setDoInput(true); //允許輸入流，即允許下載
+            conn.setDoOutput(true); //允許輸出流，即允許上傳
+            conn.setUseCaches(false); //設置是否使用緩存
+
+            JSONObject info = new JSONObject();
+            info.put("title", sender); // Notification title
+            info.put("body", messageContent); // Notification content
+            info.put("tag", sender);
+
+            JSONObject data = new JSONObject();
+            data.put("title", sender); // Notification title
+            data.put("body", messageContent); // Notification content
+
+            JSONObject message = new JSONObject();
+            message.put("condition", multiTopic.toString());
+            message.put("priority", "high");
+            message.put("notification", info);
+            message.put("data", data);
+
+
+            OutputStream os = conn.getOutputStream();
+            os.write(message.toString().getBytes("UTF-8"));
+            os.close();
+
+            //Get Response
+            InputStream is = conn.getInputStream();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+                response.append('\r');
+            }
+            reader.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            if (conn != null) {
+                conn.disconnect();
+            }
+        }
+        return response.toString();
     }
 }

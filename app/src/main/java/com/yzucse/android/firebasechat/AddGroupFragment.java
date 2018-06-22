@@ -48,7 +48,7 @@ public class AddGroupFragment extends Fragment {
     private final EditText roomNameView[] = new EditText[1];
     private final CircleImageView roomImageView[] = new CircleImageView[1];
     private final Button createButton[] = new Button[1];
-    private final Dialog d[] = new Dialog[1];
+    private final Dialog d[] = new Dialog[1]; // Login progressing dialog
     private ListView mFriendsListView;
     private ProgressBar mProgressBar;
     private TextView mNoitemText;

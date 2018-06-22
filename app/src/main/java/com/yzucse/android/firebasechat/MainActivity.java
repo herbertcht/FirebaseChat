@@ -31,6 +31,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -72,7 +73,6 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         findViewById(R.id.fragmentlayout).setVisibility(View.INVISIBLE);
-
         ((BottomNavigationView) findViewById(R.id.navigation)).setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         mProgressBar = findViewById(R.id.FragmentProgressBar);
         globalData = new GlobalData();
@@ -190,12 +190,15 @@ public class MainActivity extends AppCompatActivity
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
         globalData.setTIMEFORMAT(getString(R.string.timeFormat));
+
+        //unsubscribeFromAllTopic();
         if (mFirebaseUser == null) {
             // Not signed in, launch the Sign In activity
             startActivity(new Intent(this, SignInActivity.class));
             finish();
-            return;
         } else {
+            FirebaseMessaging.getInstance().subscribeToTopic(mFirebaseUser.getUid());
+            Log.e("FCM-debug", "I subscribeToTopic " + mFirebaseUser.getUid());
             if (globalData.getmUsersDBR() != null) {
                 usrdbr = globalData.getmUsersDBR().child(mFirebaseUser.getUid());
                 if (usrdbr != null) {
@@ -252,6 +255,26 @@ public class MainActivity extends AppCompatActivity
                 globalData.setmPhotoUrl(mFirebaseUser.getPhotoUrl().toString());
             }
         }
+    }
+
+    private void unsubscribeFromAllTopic() {
+        globalData.getmUsersDBR().addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot d : dataSnapshot.getChildren()) {
+                        FirebaseMessaging.getInstance().unsubscribeFromTopic(d.getKey());
+                        Log.e("FCM-debug", "REMOVE " + d.getKey());
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+
+            }
+        });
+        FirebaseDatabase.getInstance();
     }
 
     @Override
@@ -378,4 +401,5 @@ public class MainActivity extends AppCompatActivity
         transaction.replace(R.id.fragmentlayout, mAddGroupFragment)
                 .commit();
     }
+
 }
