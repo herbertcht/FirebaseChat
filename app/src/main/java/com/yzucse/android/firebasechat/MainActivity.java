@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity
     private boolean Main_status[] = new boolean[3];
     private boolean doubleBackToExitPressedOnce = false;
     private boolean isOffline = false;
+    private boolean unsubscribeDone = false;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -216,6 +217,14 @@ public class MainActivity extends AppCompatActivity
             startActivity(new Intent(this, SignInActivity.class));
             finish();
         } else {
+            /*while (!unsubscribeDone) {
+                try {
+                    Thread.sleep(100);
+                    Log.e("FCM-debug", "Waiting");
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }*/
             FirebaseMessaging.getInstance().subscribeToTopic(mFirebaseUser.getUid());
             Log.e("FCM-debug", "I subscribeToTopic " + mFirebaseUser.getUid());
             if (globalData.getmUsersDBR() != null) {
@@ -286,6 +295,7 @@ public class MainActivity extends AppCompatActivity
                         Log.e("FCM-debug", "REMOVE " + d.getKey());
                     }
                 }
+                unsubscribeDone = true;
             }
 
             @Override
@@ -293,7 +303,6 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
-        FirebaseDatabase.getInstance();
     }
 
     @Override
@@ -388,7 +397,7 @@ public class MainActivity extends AppCompatActivity
                 setStatus(-1);
                 if (mFriendsFragment != null) changeToFriendFragment();
                 else if (mChatRoomFragment != null) changeToChatRoomFragment();
-                else if(mSettingFragment!=null)changeToSettingFragment();
+                else if (mSettingFragment != null) changeToSettingFragment();
                 return;
             }
         }
