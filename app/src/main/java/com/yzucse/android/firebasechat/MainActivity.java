@@ -63,6 +63,9 @@ public class MainActivity extends AppCompatActivity
                 case R.id.friends:
                     changeToFriendFragment();
                     return true;
+                case R.id.setting:
+                    changeToSettingFragment();
+                    return true;
             }
             return false;
         }
@@ -143,6 +146,22 @@ public class MainActivity extends AppCompatActivity
                 mChatRoomFragment = new ChatRoomFragment();
                 mChatRoomFragment.setGlobalData(globalData);
                 chageFragment(mChatRoomFragment);
+            }
+        }).start();
+        if (complete()) mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+    }
+
+    private void changeToSettingFragment() {
+        if (Main_status[2]) return;
+        StaticValue.setViewVisibility(findViewById(R.id.userLayout), View.GONE);
+        mProgressBar.setVisibility(ProgressBar.VISIBLE);
+        new Thread(new Runnable() {
+            public void run() {
+                waitForUser();
+                setStatus(2);
+                mSettingFragment = new SettingFragment();
+                mSettingFragment.setGlobalData(globalData);
+                chageFragment(mSettingFragment);
             }
         }).start();
         if (complete()) mProgressBar.setVisibility(ProgressBar.INVISIBLE);
@@ -369,6 +388,7 @@ public class MainActivity extends AppCompatActivity
                 setStatus(-1);
                 if (mFriendsFragment != null) changeToFriendFragment();
                 else if (mChatRoomFragment != null) changeToChatRoomFragment();
+                else if(mSettingFragment!=null)changeToSettingFragment();
                 return;
             }
         }

@@ -66,6 +66,7 @@ public class AddFriendFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.add_friend_fragment, container, false);
+        StaticValue.setViewVisibility(getActivity().findViewById(R.id.fragmentlayout), View.VISIBLE);
         mProgressBar = view.findViewById(R.id.progressBar);
         mNoitemText = view.findViewById(R.id.noItem);
         mAdd_btn = view.findViewById(R.id.add_btn);

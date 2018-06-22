@@ -20,7 +20,8 @@ public class User implements Serializable {
     private Boolean online;
     private String photoUrl;
     private String email;
-
+    private String canMessage;
+    private boolean openCan;
     public User() {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
@@ -79,6 +80,22 @@ public class User implements Serializable {
 
     public Map<String, Boolean> getStickers() {
         return stickers;
+    }
+
+    public String getCanMessage() {
+        return this.canMessage;
+    }
+
+    public void setCanMessage(String canMessage) {
+        this.canMessage = canMessage;
+    }
+
+    public boolean isOpenCan() {
+        return this.openCan;
+    }
+
+    public void setOpenCan(boolean openCan) {
+        this.openCan = openCan;
     }
 
     public void setStickers(Map<String, Boolean> stickers) {
@@ -244,6 +261,9 @@ public class User implements Serializable {
         this.email = email;
     }
 
+    public String chatroomfindfriend(String chatroomid){
+        return chatrooms.get(chatroomid);
+    }
     @Override
     public String toString() {
         return " { " +

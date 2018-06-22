@@ -334,7 +334,7 @@ public class FriendsFragment extends Fragment {
         if (mGroupsAdapter != null) mGroupsAdapter.stopListening();
         Activity thisAct = getActivity();
         StaticValue.setViewVisibility(thisAct.findViewById(R.id.mainLayout), View.INVISIBLE);
-        StaticValue.setViewVisibility(thisAct.findViewById(R.id.fragmentlayout), View.VISIBLE);
+        //StaticValue.setViewVisibility(thisAct.findViewById(R.id.fragmentlayout), View.VISIBLE);
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         if (Strings.isEmptyOrWhitespace(Tag))
