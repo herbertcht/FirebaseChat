@@ -112,13 +112,16 @@ public class StaticValue {
     }
 
     static public void setAccountImage(CircleImageView view, String uri, Activity activity) {
-        if (view == null) return;
+        if (view == null || activity == null) return;
         if (!Strings.isEmptyOrWhitespace(uri)) {
             Glide.with(activity)
                     .load(uri)
                     .into(view);
-        } else
-            view.setImageDrawable(ContextCompat.getDrawable(activity, R.drawable.ic_account_circle_black_36dp));
+        } else {
+            try {
+                view.setImageDrawable(ContextCompat.getDrawable(activity, R.drawable.ic_account_circle_black_36dp));
+            }catch (Exception e){}
+        }
     }
 
     static public boolean isNullorEmptyMap(Map<String, ?> map) {

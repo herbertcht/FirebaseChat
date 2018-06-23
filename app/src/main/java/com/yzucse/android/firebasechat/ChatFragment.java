@@ -34,7 +34,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -53,6 +52,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ChatFragment extends Fragment {
+    final String lastT[] = new String[1];
+    final private String TAG = "ChatFragment";
+    final private String dateFormat = "yyyy/MM/dd EEEE";
     private SharedPreferences mSharedPreferences;
     private ImageButton mSendButton;
     private ProgressBar mProgressBar;
@@ -64,7 +66,6 @@ public class ChatFragment extends Fragment {
     private ImageView mAddMessageImageView;
     private String toDayStr;
     private GlobalData globalData;
-    private String TAG = "ChatFragment";
 
     public ChatFragment() {
     }
@@ -108,23 +109,22 @@ public class ChatFragment extends Fragment {
         StaticValue.setViewVisibility(viewHolder.otherMSGLayout, View.VISIBLE);
         long t = friendlyMessage.getTimestamp();
         if (t > 0) {
-//                    if (!StaticValue.getTimeByFormat(t, dateFormat)
-//                            .equals(lastT[0]) &&
-//                            !StaticValue.getTimeByFormat(t, dateFormat)
-//                                    .equals(StaticValue.getTimeByFormat(System.currentTimeMillis(), dateFormat))) {
-//                        lastT[0] = StaticValue.getTimeByFormat(t, dateFormat);
-//                        StaticValue.setTextViewText(viewHolder.messagerDateTextView, lastT[0]);
-//                    } else if (StaticValue.getTimeByFormat(t, dateFormat)
-//                            .equals(StaticValue.getTimeByFormat(System.currentTimeMillis(), dateFormat))
-//                            && !StaticValue.getTimeByFormat(t, dateFormat)
-//                            .equals(lastT[0]) || lastT[0].equals("1")) {
-//                        StaticValue.setTextViewText(viewHolder.messagerDateTextView, toDayStr);
-//                        lastT[0] = StaticValue.getTimeByFormat(t, dateFormat);
-//                    }
-//                    else {
-            StaticValue.setViewVisibility(viewHolder.messagerDateTextView, TextView.GONE);
-//                    }
-//                    lastT[0] = StaticValue.getTimeByFormat(t, dateFormat);
+            if (!StaticValue.getTimeByFormat(t, dateFormat)
+                    .equals(lastT[0]) &&
+                    !StaticValue.getTimeByFormat(t, dateFormat)
+                            .equals(StaticValue.getTimeByFormat(System.currentTimeMillis(), dateFormat))) {
+                lastT[0] = StaticValue.getTimeByFormat(t, dateFormat);
+                StaticValue.setTextViewText(viewHolder.messagerDateTextView, lastT[0]);
+            } else if (StaticValue.getTimeByFormat(t, dateFormat)
+                    .equals(StaticValue.getTimeByFormat(System.currentTimeMillis(), dateFormat))
+                    && !StaticValue.getTimeByFormat(t, dateFormat)
+                    .equals(lastT[0]) || lastT[0].equals("1")) {
+                StaticValue.setTextViewText(viewHolder.messagerDateTextView, toDayStr);
+                lastT[0] = StaticValue.getTimeByFormat(t, dateFormat);
+            } else {
+                StaticValue.setViewVisibility(viewHolder.messagerDateTextView, TextView.GONE);
+            }
+            lastT[0] = StaticValue.getTimeByFormat(t, dateFormat);
             StaticValue.setTextViewText(viewHolder.messengerTimestampView, StaticValue
                     .getTimeByFormat(t, globalData.getTIMEFORMAT()));
         }
@@ -182,23 +182,22 @@ public class ChatFragment extends Fragment {
         StaticValue.setViewVisibility(viewHolder.userMSGLayout, View.VISIBLE);
         long t = friendlyMessage.getTimestamp();
         if (t > 0) {
-//                    if (!StaticValue.getTimeByFormat(t, dateFormat)
-//                            .equals(lastT[0]) &&
-//                            !StaticValue.getTimeByFormat(t, dateFormat)
-//                                    .equals(StaticValue.getTimeByFormat(System.currentTimeMillis(), dateFormat))) {
-//                        lastT[0] = StaticValue.getTimeByFormat(t, dateFormat);
-//                        StaticValue.setTextViewText(viewHolder.messagerDateTextView, lastT[0]);
-//                    } else if (StaticValue.getTimeByFormat(t, dateFormat)
-//                            .equals(StaticValue.getTimeByFormat(System.currentTimeMillis(), dateFormat))
-//                            && !StaticValue.getTimeByFormat(t, dateFormat)
-//                            .equals(lastT[0]) || lastT[0].equals("1")) {
-//                        StaticValue.setTextViewText(viewHolder.messagerDateTextView, toDayStr);
-//                        lastT[0] = StaticValue.getTimeByFormat(t, dateFormat);
-//                    }
-//                    else {
-            StaticValue.setViewVisibility(viewHolder.messagerDateTextView, TextView.GONE);
-//                    }
-//                    lastT[0] = StaticValue.getTimeByFormat(t, dateFormat);
+            if (!StaticValue.getTimeByFormat(t, dateFormat)
+                    .equals(lastT[0]) &&
+                    !StaticValue.getTimeByFormat(t, dateFormat)
+                            .equals(StaticValue.getTimeByFormat(System.currentTimeMillis(), dateFormat))) {
+                lastT[0] = StaticValue.getTimeByFormat(t, dateFormat);
+                StaticValue.setTextViewText(viewHolder.messagerDateTextView, lastT[0]);
+            } else if (StaticValue.getTimeByFormat(t, dateFormat)
+                    .equals(StaticValue.getTimeByFormat(System.currentTimeMillis(), dateFormat))
+                    && !StaticValue.getTimeByFormat(t, dateFormat)
+                    .equals(lastT[0]) || lastT[0].equals("1")) {
+                StaticValue.setTextViewText(viewHolder.messagerDateTextView, toDayStr);
+                lastT[0] = StaticValue.getTimeByFormat(t, dateFormat);
+            } else {
+                StaticValue.setViewVisibility(viewHolder.messagerDateTextView, TextView.GONE);
+            }
+            lastT[0] = StaticValue.getTimeByFormat(t, dateFormat);
             StaticValue.setTextViewText(viewHolder.userMessengerTimestampView, StaticValue
                     .getTimeByFormat(t, globalData.getTIMEFORMAT()));
         }
@@ -255,8 +254,6 @@ public class ChatFragment extends Fragment {
                         .setQuery(messagesRef, parser)
                         .build();
 
-        final String dateFormat = "yyyy.MM.dd";
-        final String lastT[] = new String[1];
         lastT[0] = "1";
 
         mFirebaseAdapter = new FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>(options) {

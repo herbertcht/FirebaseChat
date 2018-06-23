@@ -201,7 +201,7 @@ public class SignInActivity extends AppCompatActivity implements
                 firebaseAuthWithGoogle(account);
             } else {
                 // Google Sign-In failed
-                Log.e(TAG, "Google Sign-In failed.");
+                Toast.makeText(this, "Google Sign-In failed.", Toast.LENGTH_SHORT).show();
             }
         }
         d.dismiss();

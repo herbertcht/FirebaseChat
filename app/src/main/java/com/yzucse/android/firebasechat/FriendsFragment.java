@@ -162,6 +162,7 @@ public class FriendsFragment extends Fragment {
                     viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+                            // here!!
                             final DatabaseReference fchatdbr = globalData.getmChatRoomDBR();
                             final String[] key = new String[1];
                             key[0] = "";
@@ -263,6 +264,7 @@ public class FriendsFragment extends Fragment {
                     viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+                            //here!!
                             globalData.setmChatroom(group);
                             EditGroupFragment mEditGroupFragment = new EditGroupFragment();
                             mEditGroupFragment.setGlobalData(globalData);
@@ -334,7 +336,7 @@ public class FriendsFragment extends Fragment {
         if (mGroupsAdapter != null) mGroupsAdapter.stopListening();
         Activity thisAct = getActivity();
         StaticValue.setViewVisibility(thisAct.findViewById(R.id.mainLayout), View.INVISIBLE);
-        //StaticValue.setViewVisibility(thisAct.findViewById(R.id.fragmentlayout), View.VISIBLE);
+        StaticValue.setViewVisibility(thisAct.findViewById(R.id.fragmentlayout), View.VISIBLE);
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         if (Strings.isEmptyOrWhitespace(Tag))
