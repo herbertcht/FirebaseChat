@@ -25,7 +25,7 @@ Prerequisites
     - [Firebase Analytics_v15.0.1](https://firebase.google.com/docs/analytics/) 分析使用者資料，包括下載次數、Crash 報告、使用流量等等
     - [Firebase Realtime Database_v15.0.1](https://firebase.google.com/docs/database/) 支持 FirebaseChat  聊天室存取、使用者資料存取
     - [Firebase Storage_v15.0.2](https://firebase.google.com/docs/storage/) 用於存取使用者傳送到聊天室的圖片
-    - [Firebase Authentication_v15.0.2](https://firebase.google.com/docs/auth/) 使用者帳戶存取
+    - [Firebase Authentication_v15.1.0](https://firebase.google.com/docs/auth/) 使用者帳戶存取
 
 Download
 ---
